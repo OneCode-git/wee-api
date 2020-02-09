@@ -25,6 +25,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Url extends BaseEntity implements Serializable{
+	private static final long serialVersionUID = 1L;
+
 	@Id
 	@Column(name="hash")
 	String hash;
