@@ -3,12 +3,18 @@
  */
 package com.wee.util;
 
+import java.io.IOException;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+
+import com.blueconic.browscap.Capabilities;
+import com.blueconic.browscap.ParseException;
+import com.blueconic.browscap.UserAgentParser;
+import com.blueconic.browscap.UserAgentService;
 
 /**
  * @author chaitu
@@ -78,6 +84,11 @@ public class Commons {
 	   		return base64Md5.substring(0, 6);
 	   	}
 	   
+	   	public static Capabilities parseUserAgent(String userAgent) throws IOException, ParseException {
+	   		final UserAgentParser parser = new UserAgentService().loadParser(); // handle IOException and ParseException
+	   		return parser.parse(userAgent);
+
+	   	}
 	    public static void main(String args[]) throws NoSuchAlgorithmException 
 	    { 
 	        String s = "GeeksForGeeks"; 
