@@ -11,6 +11,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import com.wee.entity.Url;
+import com.wee.mybatis.mapper.UrlMapper;
 import com.wee.repo.UrlRepo;
 import com.wee.util.Commons;
 
@@ -23,6 +24,7 @@ public class UrlServiceImpl implements UrlService{
 
 	@Autowired
 	UrlRepo urlRepo;
+	@Autowired UrlMapper urlMapper;
 	@Value("${wee.base.url}")
 	String weeBaseUrl;
 	
@@ -31,7 +33,7 @@ public class UrlServiceImpl implements UrlService{
 	 */
 	@Override
 	public Optional<Url> findByHash(String hash) {
-		return urlRepo.findById(hash);
+		return Optional.of(urlMapper.findById(hash));
 	}
 
 	/* (non-Javadoc)
@@ -47,7 +49,7 @@ public class UrlServiceImpl implements UrlService{
 		String hash = Commons.genHash(url.getOriginalUrl());
 		url.setHash(hash);
 		try {
-			urlRepo.save(url);
+			urlMapper.save(url);
 		}catch (DataIntegrityViolationException e) {
 			return generateTinyUrl(url);
 		}
