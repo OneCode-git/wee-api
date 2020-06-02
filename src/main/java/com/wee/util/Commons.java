@@ -5,7 +5,7 @@ package com.wee.util;
 
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.charset.Charset;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -89,6 +89,23 @@ public class Commons {
 	   		return parser.parse(userAgent);
 
 	   	}
+	   	
+	    /* Returns true if url is valid */
+	    public static boolean isValidURL(String url) 
+	    { 
+	        /* Try creating a valid URL */
+	        try { 
+	            new URL(url).toURI(); 
+	            return true; 
+	        } 
+	          
+	        // If there was an Exception 
+	        // while creating URL object 
+	        catch (Exception e) { 
+	            return false; 
+	        } 
+	    } 
+	    
 	    public static void main(String args[]) throws NoSuchAlgorithmException 
 	    { 
 	        String s = "GeeksForGeeks"; 
