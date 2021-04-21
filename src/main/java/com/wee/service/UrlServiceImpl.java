@@ -33,7 +33,7 @@ public class UrlServiceImpl implements UrlService{
 	 */
 	@Override
 	public Optional<Url> findByHash(String hash) {
-		return Optional.of(urlMapper.findById(hash));
+		return urlRepo.findById(hash);
 	}
 
 	/* (non-Javadoc)
@@ -42,6 +42,9 @@ public class UrlServiceImpl implements UrlService{
 	@Override
 	public String create(Url url) {
 		String hash = generateTinyUrl(url);
+		if (url.getGenClickId()) {
+			return weeBaseUrl+ "c/" + hash;
+		}
 		return weeBaseUrl+hash;
 	}
 	
@@ -49,7 +52,7 @@ public class UrlServiceImpl implements UrlService{
 		String hash = Commons.genHash(url.getOriginalUrl());
 		url.setHash(hash);
 		try {
-			urlMapper.save(url);
+			urlRepo.save(url);
 		}catch (DataIntegrityViolationException e) {
 			return generateTinyUrl(url);
 		}

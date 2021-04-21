@@ -4,6 +4,7 @@
 package com.wee.controller;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletResponse;
 
@@ -36,9 +37,23 @@ public class UrlController {
 	@GetMapping("{hash}")
 	void redirect(@PathVariable("hash") String hash, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgent) {
 		Optional<Url> oUrl = urlService.findByHash(hash);
-		urlClickService.save(userAgent, hash);
+//		urlClickService.save(userAgent, hash);
 		oUrl.ifPresent(url->{
 		    httpServletResponse.setHeader("Location", url.getOriginalUrl());
+		    httpServletResponse.setStatus(302);
+		});
+		
+	}
+	
+	
+	@GetMapping("c/{hash}")
+	void redirectWithClickId(@PathVariable("hash") String hash, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgent) {
+		Optional<Url> oUrl = urlService.findByHash(hash);
+//		urlClickService.save(userAgent, hash);
+		oUrl.ifPresent(url->{
+			String templateURL = url.getOriginalUrl();
+			String finalURL = templateURL.replace("%7Bclick_id%7D", UUID.randomUUID().toString());
+		    httpServletResponse.setHeader("Location", finalURL);
 		    httpServletResponse.setStatus(302);
 		});
 		
