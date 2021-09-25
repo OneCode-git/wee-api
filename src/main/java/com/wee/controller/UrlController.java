@@ -3,6 +3,7 @@
  */
 package com.wee.controller;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -53,6 +54,7 @@ public class UrlController {
 		oUrl.ifPresent(url->{
 			String templateURL = url.getOriginalUrl();
 			String finalURL = templateURL.replace("%7Bclick_id%7D", UUID.randomUUID().toString());
+			finalURL = finalURL.replace("%7Bepoch%7D", new Date().getTime()+ "");
 		    httpServletResponse.setHeader("Location", finalURL);
 		    httpServletResponse.setStatus(302);
 		});

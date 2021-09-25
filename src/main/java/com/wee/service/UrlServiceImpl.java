@@ -42,7 +42,7 @@ public class UrlServiceImpl implements UrlService{
 	@Override
 	public String create(Url url) {
 		String hash = generateTinyUrl(url);
-		if (url.getGenClickId()) {
+		if (url.getGenClickId() != null && url.getGenClickId() == true) {
 			return weeBaseUrl+ "c/" + hash;
 		}
 		return weeBaseUrl+hash;
