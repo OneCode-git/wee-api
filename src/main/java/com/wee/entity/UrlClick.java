@@ -30,7 +30,7 @@ import lombok.NoArgsConstructor;
 public class UrlClick {
 	@Id
 	@Column(name="id")
-	@org.hibernate.annotations.Type(type="org.hibernate.type.PostgresUUIDType")
+	@org.hibernate.annotations.Type(type="uuid-char")
 	UUID id;
 	
 	@Column(name="url_id")
