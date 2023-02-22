@@ -4,10 +4,12 @@
 package com.wee.service;
 
 import java.io.IOException;
+import java.lang.System.Logger;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.UUID;
 
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class UrlClickServiceImpl implements UrlClickService{
-
+	
+	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(UrlClickServiceImpl.class);
 	@Autowired
 	UrlClickRepo urlClickRepo;
 	/* (non-Javadoc)
@@ -48,7 +51,8 @@ public class UrlClickServiceImpl implements UrlClickService{
 			urlClick = urlClickRepo.save(urlClick);
 			
 		} catch (IOException | ParseException e) {
-			log.error("unable to save urlClick ", e);
+			LOGGER.error("unable to save urlClick ", e);
+			LOGGER.info("LeaderBoard Controller Exception" + e.getMessage());
 		}
 		return urlClick;
 	}
