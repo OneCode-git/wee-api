@@ -10,5 +10,6 @@ import com.wee.entity.UrlClick;
  *
  */
 public interface UrlClickService {
+	
 	UrlClick save(String userAgent, String Urlid);
 }

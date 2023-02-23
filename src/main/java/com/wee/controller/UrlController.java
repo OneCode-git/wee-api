@@ -5,8 +5,10 @@ package com.wee.controller;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.StringTokenizer;
 import java.util.UUID;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,9 +44,17 @@ public class UrlController {
 	
 	
 	@GetMapping("{hash}")
-	void redirect(@PathVariable("hash") String hash, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgent) {
+	void redirect(@PathVariable("hash") String hash, HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgent, @RequestHeader("X-Forwarded-For") String xForwardedForHeader) {
 		Optional<Url> oUrl = urlService.findByHash(hash);
 //		urlClickService.save(userAgent, hash);
+		    String userIp =null;
+		    if (xForwardedForHeader == null) {
+		        userIp =  request.getRemoteAddr();
+		    } 
+		    else {
+		        userIp =  new StringTokenizer(xForwardedForHeader, ",").nextToken().trim();
+		    }
+		 
 		oUrl.ifPresent(url->{
 		    httpServletResponse.setHeader("Location", url.getOriginalUrl());
 		    httpServletResponse.setStatus(302);

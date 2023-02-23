@@ -11,6 +11,7 @@ import java.util.UUID;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.blueconic.browscap.Capabilities;
@@ -37,6 +38,7 @@ public class UrlClickServiceImpl implements UrlClickService{
 	 * @see com.wee.service.UrlClickService#save(com.wee.entity.UrlClick)
 	 */
 	@Override
+	@Async
 	public UrlClick save(String userAgent, String urlId) {
 		UrlClick urlClick = null;
 		try {
