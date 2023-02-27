@@ -58,7 +58,6 @@ public class UrlClickServiceImpl implements UrlClickService{
 			
 		} catch (IOException | ParseException e) {
 			LOGGER.error("unable to save urlClick ", e);
-			LOGGER.info("LeaderBoard Controller Exception" + e.getMessage());
 		}
 		return urlClick;
 	}
