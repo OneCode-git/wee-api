@@ -18,6 +18,7 @@ import com.blueconic.browscap.Capabilities;
 import com.blueconic.browscap.ParseException;
 import com.wee.entity.Url;
 import com.wee.entity.UrlClick;
+import com.wee.mybatis.mapper.UrlMapper;
 import com.wee.repo.UrlClickRepo;
 import com.wee.util.Commons;
 
@@ -34,6 +35,8 @@ public class UrlClickServiceImpl implements UrlClickService{
 	private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(UrlClickServiceImpl.class);
 	@Autowired
 	UrlClickRepo urlClickRepo;
+	@Autowired
+	UrlMapper urlMapper;
 	/* (non-Javadoc)
 	 * @see com.wee.service.UrlClickService#save(com.wee.entity.UrlClick)
 	 */
@@ -50,6 +53,7 @@ public class UrlClickServiceImpl implements UrlClickService{
 			urlClick.setUrlId(urlId);
 			urlClick.setCreatedTs(new Timestamp(new Date().getTime()));
 			urlClick.setId(UUID.randomUUID());
+			System.out.println(urlClick.getUserIp());
 			urlClick = urlClickRepo.save(urlClick);
 			
 		} catch (IOException | ParseException e) {
@@ -57,6 +61,28 @@ public class UrlClickServiceImpl implements UrlClickService{
 			LOGGER.info("LeaderBoard Controller Exception" + e.getMessage());
 		}
 		return urlClick;
+	}
+	
+	public void saveInUrlClick(String userAgent, String urlId, String ipData) {
+		UrlClick urlClick = null;
+		try {
+			Capabilities capabilities = Commons.parseUserAgent(userAgent);
+
+			urlClick = new UrlClick(capabilities);
+//			Url url = new Url();
+//			url.setHash(urlId);
+			urlClick.setUrlId(urlId);
+			urlClick.setCreatedTs(new Timestamp(new Date().getTime()));
+			urlClick.setId(UUID.randomUUID());
+			urlClick.setUserIp(ipData);
+			
+			urlMapper.saveInUrlClick(urlClick);
+			
+		} catch (IOException | ParseException e) {
+			LOGGER.error("unable to save urlClick ", e);
+			LOGGER.info("LeaderBoard Controller Exception" + e.getMessage());
+		}
+		
 	}
 
 }

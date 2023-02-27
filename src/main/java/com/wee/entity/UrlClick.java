@@ -104,6 +104,14 @@ public class UrlClick {
 	public void setCreatedTs(Timestamp createdTs) {
 		this.createdTs = createdTs;
 	}
+	
+	public void setUserIp(String userIp) {
+		this.userIp = userIp;
+	}
+	
+	public String getUserIp() {
+		return userIp;
+	}
 
 	@Column(name="url_id")
 	String urlId;
@@ -129,6 +137,9 @@ public class UrlClick {
 	@Column(name="created_ts")
 	Timestamp createdTs;
 	
+	@Column(name="user_ip")
+	String userIp;
+	
 	public UrlClick(Capabilities capabilities) {
 		browser = capabilities.getBrowser();
 		browserMajorversion = (capabilities.getBrowserMajorVersion());
@@ -136,5 +147,6 @@ public class UrlClick {
 		deviceType = (capabilities.getDeviceType());
 		platform = (capabilities.getPlatform());
 		platformVersion = (capabilities.getPlatformVersion());
+		//userIp = (capabilities.getUserIp());
 	}
 }

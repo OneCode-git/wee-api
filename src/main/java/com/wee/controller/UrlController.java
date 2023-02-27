@@ -44,17 +44,17 @@ public class UrlController {
 	
 	
 	@GetMapping("{hash}")
-	void redirect(@PathVariable("hash") String hash, HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgent, @RequestHeader("X-Forwarded-For") String xForwardedForHeader) {
+	void redirect(@PathVariable("hash") String hash, HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgent) {
 		Optional<Url> oUrl = urlService.findByHash(hash);
-//		urlClickService.save(userAgent, hash);
-		    String userIp =null;
-		    if (xForwardedForHeader == null) {
-		        userIp =  request.getRemoteAddr();
-		    } 
-		    else {
-		        userIp =  new StringTokenizer(xForwardedForHeader, ",").nextToken().trim();
-		    }
-		 
+		String ipAddress = "";
+        if (request != null) {
+        	ipAddress = request.getHeader("X-FORWARDED-FOR");
+            if (ipAddress == null || "".equals(ipAddress)) {
+            	ipAddress = request.getRemoteAddr();
+            }
+        }
+		     urlClickService.saveInUrlClick(userAgent, hash, ipAddress);
+		     
 		oUrl.ifPresent(url->{
 		    httpServletResponse.setHeader("Location", url.getOriginalUrl());
 		    httpServletResponse.setStatus(302);
@@ -66,7 +66,7 @@ public class UrlController {
 	@GetMapping("c/{hash}")
 	void redirectWithClickId(@PathVariable("hash") String hash, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgent) {
 		Optional<Url> oUrl = urlService.findByHash(hash);
-//		urlClickService.save(userAgent, hash);
+    //	urlClickService.save(userAgent, hash);
 		oUrl.ifPresent(url->{
 			String templateURL = url.getOriginalUrl();
 			String finalURL = templateURL.replace("%7Bclick_id%7D", UUID.randomUUID().toString());
