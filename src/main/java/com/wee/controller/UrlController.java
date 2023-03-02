@@ -7,6 +7,10 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.UUID;
+import eu.bitwalker.useragentutils.*;
+
+
+
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,16 +48,35 @@ public class UrlController {
 	
 	
 	@GetMapping("{hash}")
-	void redirect(@PathVariable("hash") String hash, HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgent) {
+	void redirect(@PathVariable("hash") String hash, HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
 		Optional<Url> oUrl = urlService.findByHash(hash);
 		String ipAddress = "";
+		
         if (request != null) {
         	ipAddress = request.getHeader("X-FORWARDED-FOR");
             if (ipAddress == null || "".equals(ipAddress)) {
             	ipAddress = request.getRemoteAddr();
             }
         }
-		     urlClickService.saveInUrlClick(userAgent, hash, ipAddress);
+
+        UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
+     
+        Browser browser = userAgent.getBrowser();  // To get the Browser
+        String browserName = browser.getName();
+        System.out.println("Browser: " + browserName);
+
+        
+        Version browserVersion = userAgent.getBrowserVersion();  // To get the Browser Version
+        String version = browserVersion.getVersion();
+        System.out.println("Version: " + version);
+
+        
+        DeviceType deviceType = os.getDeviceType();  // To get the Device Type
+        String deviceTypeName = deviceType.getName();
+        System.out.println("Device Type: " + deviceTypeName);
+
+        
+		     urlClickService.saveInUrlClick(userAgentString, hash, ipAddress);
 		     
 		oUrl.ifPresent(url->{
 		    httpServletResponse.setHeader("Location", url.getOriginalUrl());
