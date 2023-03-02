@@ -7,9 +7,6 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.UUID;
-import eu.bitwalker.useragentutils.*;
-
-
 
 
 import javax.servlet.http.HttpServletRequest;

@@ -29,6 +29,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.1'
 	implementation 'eu.bitwalker:UserAgentUtils:1.21'
+    implementation 'com.microsoft.azure:azure-functions-java-worker:1.6.2'
+	
 	
     compile group: 'com.moilioncircle', name: 'user-agent-utils', version: '1.53'
 
