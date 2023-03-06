@@ -3,7 +3,10 @@
  */
 package com.wee.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.UUID;
@@ -15,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -32,6 +36,9 @@ import com.wee.service.UrlClickService;
 import com.wee.service.UrlService;
 import com.wee.util.Commons;
 
+import eu.bitwalker.useragentutils.UserAgent;
+
+
 /**
  * @author chaitu
  *
@@ -45,41 +52,19 @@ public class UrlController {
 	
 	
 	@GetMapping("{hash}")
-	void redirect(@PathVariable("hash") String hash, HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
+	void redirect(@PathVariable("hash") String hash, HttpServletRequest request,
+			HttpServletResponse httpServletResponse, @RequestHeader("User-Agent") String userAgentString) {
 		Optional<Url> oUrl = urlService.findByHash(hash);
-		String ipAddress = "";
-		
-        if (request != null) {
-        	ipAddress = request.getHeader("X-FORWARDED-FOR");
-            if (ipAddress == null || "".equals(ipAddress)) {
-            	ipAddress = request.getRemoteAddr();
-            }
-        }
-
-        UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
-     
-        Browser browser = userAgent.getBrowser();  // To get the Browser
-        String browserName = browser.getName();
-        System.out.println("Browser: " + browserName);
-
-        
-        Version browserVersion = userAgent.getBrowserVersion();  // To get the Browser Version
-        String version = browserVersion.getVersion();
-        System.out.println("Version: " + version);
-
-        
-        DeviceType deviceType = os.getDeviceType();  // To get the Device Type
-        String deviceTypeName = deviceType.getName();
-        System.out.println("Device Type: " + deviceTypeName);
-
-        
-		     urlClickService.saveInUrlClick(userAgentString, hash, ipAddress);
-		     
-		oUrl.ifPresent(url->{
-		    httpServletResponse.setHeader("Location", url.getOriginalUrl());
-		    httpServletResponse.setStatus(302);
+		String ipAddress = urlClickService.getIpAddress(request);
+		userAgentString = request.getHeader("user-agent");
+		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
+		List<String> values = urlClickService.getValuesFromUserAgent(userAgent);
+		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, values.get(0), values.get(1), values.get(2));
+		oUrl.ifPresent(url -> {
+			httpServletResponse.setHeader("Location", url.getOriginalUrl());
+			httpServletResponse.setStatus(302);
 		});
-		
+
 	}
 	
 	

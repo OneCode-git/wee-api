@@ -6,8 +6,12 @@ package com.wee.service;
 import java.io.IOException;
 import java.lang.System.Logger;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +26,10 @@ import com.wee.mybatis.mapper.UrlMapper;
 import com.wee.repo.UrlClickRepo;
 import com.wee.util.Commons;
 
+import eu.bitwalker.useragentutils.Browser;
+import eu.bitwalker.useragentutils.OperatingSystem;
+import eu.bitwalker.useragentutils.UserAgent;
+import eu.bitwalker.useragentutils.Version;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -62,7 +70,7 @@ public class UrlClickServiceImpl implements UrlClickService{
 		return urlClick;
 	}
 	
-	public void saveInUrlClick(String userAgent, String urlId, String ipData) {
+	public void saveInUrlClick(String userAgent, String urlId, String ipData, String browserName, String version, String deviceTypeName) {
 		UrlClick urlClick = null;
 		try {
 			Capabilities capabilities = Commons.parseUserAgent(userAgent);
@@ -74,6 +82,10 @@ public class UrlClickServiceImpl implements UrlClickService{
 			urlClick.setCreatedTs(new Timestamp(new Date().getTime()));
 			urlClick.setId(UUID.randomUUID());
 			urlClick.setUserIp(ipData);
+			urlClick.setBrowser(browserName);
+			urlClick.setBrowserMajorversion(version);
+			urlClick.setDeviceType(deviceTypeName);
+		   
 			
 			urlMapper.saveInUrlClick(urlClick);
 			
@@ -82,6 +94,42 @@ public class UrlClickServiceImpl implements UrlClickService{
 			LOGGER.info("LeaderBoard Controller Exception" + e.getMessage());
 		}
 		
+	}
+
+	public List<String> getValuesFromUserAgent(UserAgent userAgent) {
+		String browserName = "";
+		String version = "";
+		String deviceTypeName = "";
+		List<String> values = new ArrayList<String>();
+		Browser browser = userAgent.getBrowser(); // To get the Browser
+		if (browser != null)
+			browserName = browser.getName();
+
+		Version browserVersion = userAgent.getBrowserVersion(); // To get the Browser Version
+		if (browserVersion != null)
+			version = browserVersion.getVersion();
+
+		OperatingSystem deviceType = userAgent.getOperatingSystem();
+		if (deviceType != null) // To get the Device Type
+			deviceTypeName = deviceType.getName();
+
+		values.add(browserName);
+		values.add(version);
+		values.add(deviceTypeName);
+
+		return values;
+
+	}
+	
+	public String getIpAddress(HttpServletRequest request) {
+		String ipAddress = "";
+		if (request != null) {
+			ipAddress = request.getHeader("X-FORWARDED-FOR");
+			if (ipAddress == null || "".equals(ipAddress)) {
+				ipAddress = request.getRemoteAddr();
+			}
+		}
+		return ipAddress;
 	}
 
 }
