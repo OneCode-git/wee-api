@@ -56,7 +56,6 @@ public class UrlController {
 			HttpServletResponse httpServletResponse, @RequestHeader("User-Agent") String userAgentString) {
 		Optional<Url> oUrl = urlService.findByHash(hash);
 		String ipAddress = urlClickService.getIpAddress(request);
-		userAgentString = request.getHeader("user-agent");
 		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
 		List<String> values = urlClickService.getValuesFromUserAgent(userAgent);
 		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, values.get(0), values.get(1), values.get(2));
