@@ -25,6 +25,4 @@ public interface UrlClickService {
 	String getIpAddress(HttpServletRequest request);
 	
 	void saveInUrlClick(String userAgent, String Urlid, String IpData, String browserName, String version, String deviceTypeName);
-	
-	//UrlClick saveIP(String IpData, String Urlid);
 }

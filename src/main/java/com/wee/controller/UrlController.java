@@ -70,7 +70,6 @@ public class UrlController {
 	@GetMapping("c/{hash}")
 	void redirectWithClickId(@PathVariable("hash") String hash, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgent) {
 		Optional<Url> oUrl = urlService.findByHash(hash);
-    //	urlClickService.save(userAgent, hash);
 		oUrl.ifPresent(url->{
 			String templateURL = url.getOriginalUrl();
 			String finalURL = templateURL.replace("%7Bclick_id%7D", UUID.randomUUID().toString());

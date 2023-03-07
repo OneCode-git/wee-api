@@ -56,8 +56,6 @@ public class UrlClickServiceImpl implements UrlClickService{
 			Capabilities capabilities = Commons.parseUserAgent(userAgent);
 
 			urlClick = new UrlClick(capabilities);
-//			Url url = new Url();
-//			url.setHash(urlId);
 			urlClick.setUrlId(urlId);
 			urlClick.setCreatedTs(new Timestamp(new Date().getTime()));
 			urlClick.setId(UUID.randomUUID());
@@ -76,8 +74,6 @@ public class UrlClickServiceImpl implements UrlClickService{
 			Capabilities capabilities = Commons.parseUserAgent(userAgent);
 
 			urlClick = new UrlClick(capabilities);
-//			Url url = new Url();
-//			url.setHash(urlId);
 			urlClick.setUrlId(urlId);
 			urlClick.setCreatedTs(new Timestamp(new Date().getTime()));
 			urlClick.setId(UUID.randomUUID());
@@ -97,9 +93,9 @@ public class UrlClickServiceImpl implements UrlClickService{
 	}
 
 	public List<String> getValuesFromUserAgent(UserAgent userAgent) {
-		String browserName = "";
-		String version = "";
-		String deviceTypeName = "";
+		String browserName = null;
+		String version = null;
+		String deviceTypeName = null;
 		List<String> values = new ArrayList<String>();
 		Browser browser = userAgent.getBrowser(); // To get the Browser
 		if (browser != null)
