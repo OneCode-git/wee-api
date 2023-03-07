@@ -68,7 +68,7 @@ public class UrlClickServiceImpl implements UrlClickService{
 		return urlClick;
 	}
 	
-	public void saveInUrlClick(String userAgent, String urlId, String ipData, String browserName, String version, String deviceTypeName) {
+	public void saveInUrlClick(String userAgent, String urlId, String ipData, List<String> extractedValues) {
 		UrlClick urlClick = null;
 		try {
 			Capabilities capabilities = Commons.parseUserAgent(userAgent);
@@ -78,9 +78,9 @@ public class UrlClickServiceImpl implements UrlClickService{
 			urlClick.setCreatedTs(new Timestamp(new Date().getTime()));
 			urlClick.setId(UUID.randomUUID());
 			urlClick.setUserIp(ipData);
-			urlClick.setBrowser(browserName);
-			urlClick.setBrowserMajorversion(version);
-			urlClick.setDeviceType(deviceTypeName);
+			urlClick.setBrowser(extractedValues.get(0));
+			urlClick.setBrowserMajorversion(extractedValues.get(1));
+			urlClick.setDeviceType(extractedValues.get(1));
 		   
 			
 			urlMapper.saveInUrlClick(urlClick);

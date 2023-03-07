@@ -57,8 +57,8 @@ public class UrlController {
 		Optional<Url> oUrl = urlService.findByHash(hash);
 		String ipAddress = urlClickService.getIpAddress(request);
 		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
-		List<String> values = urlClickService.getValuesFromUserAgent(userAgent);
-		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, values.get(0), values.get(1), values.get(2));
+		List<String> extractedValues = urlClickService.getValuesFromUserAgent(userAgent);
+		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, extractedValues );
 		oUrl.ifPresent(url -> {
 			httpServletResponse.setHeader("Location", url.getOriginalUrl());
 			httpServletResponse.setStatus(302);
