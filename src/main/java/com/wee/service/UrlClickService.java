@@ -24,5 +24,5 @@ public interface UrlClickService {
 	
 	String getIpAddress(HttpServletRequest request);
 	
-	void saveInUrlClick(String userAgent, String Urlid, String IpData, List<String> extractedValues);
+	void saveInUrlClick(String userAgent, String Urlid, String IpData, List<String> userAgentDerivatives);
 }

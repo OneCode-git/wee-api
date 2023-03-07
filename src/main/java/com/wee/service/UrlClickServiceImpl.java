@@ -68,7 +68,7 @@ public class UrlClickServiceImpl implements UrlClickService{
 		return urlClick;
 	}
 	
-	public void saveInUrlClick(String userAgent, String urlId, String ipData, List<String> extractedValues) {
+	public void saveInUrlClick(String userAgent, String urlId, String ipData, List<String> userAgentDerivatives) {
 		UrlClick urlClick = null;
 		try {
 			Capabilities capabilities = Commons.parseUserAgent(userAgent);
