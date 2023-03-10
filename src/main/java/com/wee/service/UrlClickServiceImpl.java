@@ -78,9 +78,9 @@ public class UrlClickServiceImpl implements UrlClickService{
 			urlClick.setCreatedTs(new Timestamp(new Date().getTime()));
 			urlClick.setId(UUID.randomUUID());
 			urlClick.setUserIp(ipData);
-			urlClick.setBrowser(extractedValues.get(0));
-			urlClick.setBrowserMajorversion(extractedValues.get(1));
-			urlClick.setDeviceType(extractedValues.get(1));
+			urlClick.setBrowser(userAgentDerivatives.get(0));
+			urlClick.setBrowserMajorversion(userAgentDerivatives.get(1));
+			urlClick.setDeviceType(userAgentDerivatives.get(2));
 		   
 			
 			urlMapper.saveInUrlClick(urlClick);

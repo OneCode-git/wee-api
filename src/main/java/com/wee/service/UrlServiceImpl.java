@@ -3,6 +3,8 @@
  */
 package com.wee.service;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,7 +52,9 @@ public class UrlServiceImpl implements UrlService{
 	
 	String generateTinyUrl(Url url) {
 		String hash = Commons.genHash(url.getOriginalUrl());
+		Timestamp created_at  = new Timestamp(System.currentTimeMillis());
 		url.setHash(hash);
+		url.setCreatedTs(created_at);
 		try {
 			urlRepo.save(url);
 		}catch (DataIntegrityViolationException e) {
