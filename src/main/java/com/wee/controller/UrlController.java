@@ -68,8 +68,12 @@ public class UrlController {
 	
 	
 	@GetMapping("c/{hash}")
-	void redirectWithClickId(@PathVariable("hash") String hash, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgent) {
+	void redirectWithClickId(@PathVariable("hash") String hash,HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
 		Optional<Url> oUrl = urlService.findByHash(hash);
+		String ipAddress = urlClickService.getIpAddress(request);
+		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
+		List<String> userAgentDerivatives = urlClickService.getValuesFromUserAgent(userAgent);
+		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
 		oUrl.ifPresent(url->{
 			String templateURL = url.getOriginalUrl();
 			String finalURL = templateURL.replace("%7Bclick_id%7D", UUID.randomUUID().toString());
