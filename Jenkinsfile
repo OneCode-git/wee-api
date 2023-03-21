@@ -34,10 +34,9 @@ pipeline {
         stage('Code Build') {
             steps {
                 script {
-                     // sh("mvn clean package -Dmaven.test.skip=true" )
-                     // sh ("mv ${env.WORKSPACE}/target/*.zip ${env.WORKSPACE}/target/${env.Filename}.zip ")
-                     // sh ("cd ${env.WORKSPACE}/target/; zip -r ${env.Filename}.zip *.jar")
-                
+                     sh("./gradlew build" )
+                     sh ("mv ${env.WORKSPACE}/target/*.zip ${env.WORKSPACE}/target/${env.Filename}.zip ")
+                     sh ("cd ${env.WORKSPACE}/target/; zip -r ${env.Filename}.zip *.jar")   
                 }
             }
         }
@@ -45,8 +44,7 @@ pipeline {
         stage('Copy file to S3') {
             steps {
                 script {
-                     // sh ("aws s3 cp ${env.WORKSPACE}/target/*.zip s3://${env.BucketName} --region ${env.AWS_REGION}")
-                
+                     sh ("aws s3 cp ${env.WORKSPACE}/target/*.zip s3://${env.BucketName} --region ${env.AWS_REGION}")
                 }
             }
         }
