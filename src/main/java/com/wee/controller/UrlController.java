@@ -3,18 +3,14 @@
  */
 package com.wee.controller;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.StringTokenizer;
-import java.util.UUID;
+import java.io.*;
+import java.util.*;
 
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.google.gson.Gson;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -35,6 +31,14 @@ import com.wee.entity.Url;
 import com.wee.service.UrlClickService;
 import com.wee.service.UrlService;
 import com.wee.util.Commons;
+
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
+import org.apache.commons.io.IOUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import eu.bitwalker.useragentutils.UserAgent;
 
@@ -99,6 +103,24 @@ public class UrlController {
 			return new ResponseEntity<String>(shortURL, HttpStatus.CREATED);
 		}
 		return new ResponseEntity<String>("invalid URL", HttpStatus.BAD_REQUEST);		
+	}
+
+	@GetMapping("/test")
+	public JSONObject test() throws Exception {
+	    File file = new File("/Users/bhaskar/Downloads/oncode_projects/wee-api/src/main/resources/data.json");
+        		List<String> urlData;
+        		try(InputStream in = new FileInputStream(file)){
+        			String dataString = IOUtils.toString(in);
+        			JSONArray array = new JSONArray(dataString);
+        			 urlData = IntStream.range(0, array.length())
+        					.mapToObj(i -> array.getJSONObject(i))
+        					.map(obj -> obj.optString("url"))
+        					.collect(Collectors.toList());
+        		}
+		Map<String, String> shortUrls = urlService.getShortUrls(urlData);
+		Gson gson  = new Gson();
+		gson.toJson(shortUrls, new FileWriter("/Users/bhaskar/Downloads/oncode_projects/wee-api/src/main/resources/result1.json"));
+		return new JSONObject(shortUrls);
 	}
 	
 }
