@@ -4,10 +4,7 @@
 package com.wee.service;
 
 import java.sql.Timestamp;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -68,9 +65,13 @@ public class UrlServiceImpl implements UrlService{
 	@Override
 	public Map<String, String> getShortUrls(List<String> dataList){
 		Map<String, String> data = new HashMap<>();
+		List<Url> urlsList = new ArrayList<>();
 		for(String str : dataList){
-			data.put(str,weeBaseUrl + Commons.genHash(str));
+			String hash = Commons.genHash(str);
+			data.put(str,weeBaseUrl + hash);
+			urlsList.add(Url.builder().createdTs(new Timestamp(System.currentTimeMillis())).originalUrl(str).hash(hash).build());
 		}
+		urlRepo.saveAll(urlsList);
 		return data;
 	}
 
