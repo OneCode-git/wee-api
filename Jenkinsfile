@@ -19,22 +19,24 @@ pipeline {
     }
 
     stages {       
-        stage('Setting Variables') {
-            steps {
-                 script {
+        //stage('Setting Variables') {
+        //    steps {
+        //         script {
              
                      // sh("sed -i 's/-Dnewrelic.config.app_name=abc/-Dnewrelic.config.app_name=${params.ENVIRONMENTS}/g' ${env.WORKSPACE}/.ebextensions/newrelic.config")
                      
                      // Passing Workspace, Region, Environment Type, Environment name 
                      // sh("bash ${env.WORKSPACE}/modifyconf.sh ${env.WORKSPACE}/.ebextensions ${params.AWS_REGION} ${params.ENV_TYPE} ${params.ENVIRONMENTS} ")  
-                }
-            }
-        }       
+        //        }
+        //    }
+        //}       
         
         stage('Code Build') {
             steps {
                 script {
-                     sh("./gradlew build" )
+                     sh("./gradlew clean")
+                     sh("./gradlew assemble")
+                     //sh("./gradlew build" )
                      sh ("mv ${env.WORKSPACE}/target/*.zip ${env.WORKSPACE}/target/${env.Filename}.zip ")
                      sh ("cd ${env.WORKSPACE}/target/; zip -r ${env.Filename}.zip *.jar")   
                 }
