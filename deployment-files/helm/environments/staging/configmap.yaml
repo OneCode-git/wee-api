@@ -1,6 +1,6 @@
-BASE_URL: https://wee.bnking.in/
-GRADLE_HOME: /usr/local/gradle
-M2: /usr/local/apache-maven/bin
-M2_HOME: /usr/local/apache-maven
-SERVER_PORT: "5007"
-_JAVA_OPTIONS: -javaagent:/var/newrelic.jar -Dnewrelic.config.app_name=wee-bnking-eks -Dnewrelic.config.license_key=68091cd17960f5b4a1ea1ca600708bc38876NRAL -Xms256m
+  BASE_URL: https://wee.bnking.in/
+  GRADLE_HOME: /usr/local/gradle
+  M2: /usr/local/apache-maven/bin
+  M2_HOME: /usr/local/apache-maven
+  SERVER_PORT: "5007"
+  _JAVA_OPTIONS: -javaagent:/var/newrelic.jar -Dnewrelic.config.app_name=wee-bnking-eks -Dnewrelic.config.license_key=68091cd17960f5b4a1ea1ca600708bc38876NRAL -Xms256m
