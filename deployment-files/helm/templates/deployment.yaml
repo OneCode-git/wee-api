@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName  }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    access: {{ .Values.appName  }}
+spec:
+  ##replicas: {{ .Values.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  selector:
+    matchLabels:
+      access: {{ .Values.appName  }}
+  template:
+    metadata:
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+        checksum/configmap1: {{ printf "environments/%s/configmap.yaml" .Values.global.env | .Files.Get | sha256sum }}
+      labels:
+        access: {{ .Values.appName  }}
+    spec:
+      containers:
+      - name: "{{ .Values.appName  }}-{{ .Values.global.env  }}"
+        image: "{{ .Values.image.name }}:{{ .Values.image.tag  }}" 
+        ports:
+        - name: {{ .Values.appName  }}
+          containerPort: {{ .Values.targetport }}
+        # readinessProbe:
+        #     httpGet:
+        #       path: /actuator/health/readiness
+        #       port: {{ .Values.targetport }}
+        #     initialDelaySeconds: 60
+        #     periodSeconds: 10
+        envFrom:
+            - configMapRef:
+                name:  "{{ .Values.appName }}-{{ .Values.global.env  }}-configmap"
+        resources:
+          requests:
+            cpu: 1
+            memory: "1Gi"
+          limits:
+            cpu: 2
+            memory: "1.5sGi"
+        imagePullPolicy: Always
