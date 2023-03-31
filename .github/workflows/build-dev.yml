@@ -16,7 +16,7 @@ jobs:
     steps:
     - name: Sets env vars for Dev
       run: |
-          echo "Container_Registry_NAME=887417737466.dkr.ecr.ap-south-1.amazonaws.com/wee-api-staging:latest" >> $GITHUB_ENV
+          echo "Container_Registry_NAME=887417737466.dkr.ecr.ap-south-1.amazonaws.com/wee-api-staging" >> $GITHUB_ENV
           echo "AWS_Account=887417737466" >> $GITHUB_ENV
           echo "Region=ap-south-1"  >> $GITHUB_ENV
           echo "ClusterName=Staging-EKS-Onecode" >> $GITHUB_ENV
