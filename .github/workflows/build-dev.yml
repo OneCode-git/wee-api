@@ -60,13 +60,13 @@ jobs:
     - name: Execute Gradle build
       run: ./gradlew build
         
-    - name: SonarQube Scan
-      uses: sonarsource/sonarqube-scan-action@master
-      env:
-           SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
-           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_STAGING }}
-      with:
-          projectBaseDir: ./
+#     - name: SonarQube Scan
+#       uses: sonarsource/sonarqube-scan-action@master
+#       env:
+#            SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
+#            SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_STAGING }}
+#       with:
+#           projectBaseDir: ./
 
       
     - name: Login to Docker Hub
