@@ -58,7 +58,7 @@ jobs:
       uses: gradle/gradle-build-action@v2
       
     - name: Execute Gradle build
-      run:  gradlew build
+      run:  ./gradlew build
         
 #     - name: SonarQube Scan
 #       uses: sonarsource/sonarqube-scan-action@master
