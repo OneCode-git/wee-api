@@ -44,5 +44,5 @@ spec:
             memory: "1Gi"
           limits:
             cpu: 2
-            memory: "1.5sGi"
+            memory: "1.5Gi"
         imagePullPolicy: Always
