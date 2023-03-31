@@ -2,7 +2,6 @@ on:
   push:
     branches:
       - githubactions-newstaging
-
     
 env:
   AWS_Region: ap-south-1
