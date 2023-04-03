@@ -1,4 +1,4 @@
-  BASE_URL: https://wee.bnking.in/
+  BASE_URL: https://wee-eks.bnking.in/
   GRADLE_HOME: /usr/local/gradle
   M2: /usr/local/apache-maven/bin
   M2_HOME: /usr/local/apache-maven
