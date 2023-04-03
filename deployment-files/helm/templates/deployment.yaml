@@ -29,12 +29,12 @@ spec:
         ports:
         - name: {{ .Values.appName  }}
           containerPort: {{ .Values.targetport }}
-        # readinessProbe:
-        #     httpGet:
-        #       path: /actuator/health/readiness
-        #       port: {{ .Values.targetport }}
-        #     initialDelaySeconds: 60
-        #     periodSeconds: 10
+        readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: {{ .Values.targetport }}
+            initialDelaySeconds: 60
+            periodSeconds: 10
         envFrom:
             - configMapRef:
                 name:  "{{ .Values.appName }}-{{ .Values.global.env  }}-configmap"
