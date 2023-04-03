@@ -5,8 +5,8 @@ namespace: production
 serviceport: 80
 #replicas: 2
 targetport: 5007
-hosts: "*.zetapp.in"
-dnsname: wee.zetapp.in
+#hosts: "*.zetapp.in"
+dnsname: wee.bnking.in
 subnet: subnet-06a741cebaf0f7819,subnet-06e90286ced3c92b3,subnet-026043a113ecb3b3a
 LBname: production-eks-lbingress
 
