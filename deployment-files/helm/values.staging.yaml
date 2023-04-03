@@ -4,8 +4,8 @@ appName: wee-api
 namespace: staging
 serviceport: 80
 targetport: 5007
-hosts: "*.staging.onecode.in"
-dnsname: wee-eks.staging.onecode.in
+hosts: "*.bnking.in
+dnsname: wee-eks.bnking.in
 subnet: subnet-2568bb5e,subnet-c6bbe0ae,subnet-ae8e06e2
 LBname: staging-eks-lbingress
 
