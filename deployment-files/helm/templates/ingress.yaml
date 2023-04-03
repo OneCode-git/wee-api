@@ -15,14 +15,14 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: instance
     alb.ingress.kubernetes.io/subnets: {{ .Values.subnet }}
-    alb.ingress.kubernetes.io/success-codes: 200-403
-    # alb.ingress.kubernetes.io/success-codes: '200'
-    # alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
-    # alb.ingress.kubernetes.io/healthcheck-path: /health-check
-    # alb.ingress.kubernetes.io/healthcheck-interval-seconds: '30'
-    # alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '10'
-    # alb.ingress.kubernetes.io/healthy-threshold-count: '2'
-    # alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
+    #alb.ingress.kubernetes.io/success-codes: 200-403
+    alb.ingress.kubernetes.io/success-codes: '200'
+    alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
+    alb.ingress.kubernetes.io/healthcheck-path: /actuator/health
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: '30'
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: '10'
+    alb.ingress.kubernetes.io/healthy-threshold-count: '2'
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
     alb.ingress.kubernetes.io/group.name: {{ .Values.global.env  }}
 #Change group name as per requirement    
 
