@@ -29,6 +29,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.1'
 	implementation 'com.github.ua-parser:uap-java:1.5.4'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
     compile group: 'com.moilioncircle', name: 'user-agent-utils', version: '1.53'
     compile group: 'com.moilioncircle', name: 'user-agent-utils', version: '1.53'	
 	implementation group: 'com.mysql', name: 'mysql-connector-j', version: '8.0.32'
