@@ -2,7 +2,8 @@ on:
   push:
     branches:
       - githubactions-newprod
-      
+  
+  
 env:
   AWS_Region: ap-south-1
   #branchName: ${{ github.head_ref }}
