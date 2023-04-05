@@ -1,8 +1,7 @@
 on:
   push:
     branches:
-      - githubactions-newprod
-  
+      - githubactions-newprod 
   
 env:
   AWS_Region: ap-south-1
