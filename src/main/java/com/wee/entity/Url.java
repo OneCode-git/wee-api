@@ -42,6 +42,9 @@ public class Url extends BaseEntity implements Serializable{
 	@Column(name="expires_on")
 	Timestamp expiresOn;
 	
+	@Column(name="metadata")
+	String metadata;
+	
 	@Transient
 	Boolean genClickId;
 
@@ -71,6 +74,14 @@ public class Url extends BaseEntity implements Serializable{
 
 	public Timestamp getExpiresOn() {
 		return expiresOn;
+	}
+	
+	public String getMetadata() {
+		return metadata;
+	}
+	
+	public void setMetadat(String metadata) {
+		this.metadata = metadata;
 	}
 
 	public void setExpiresOn(Timestamp expiresOn) {

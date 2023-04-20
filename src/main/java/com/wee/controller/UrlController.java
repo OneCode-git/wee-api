@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.StringTokenizer;
 import java.util.UUID;
@@ -29,8 +30,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wee.dto.UrlDto;
 import com.wee.entity.Url;
 import com.wee.service.UrlClickService;
 import com.wee.service.UrlService;
@@ -91,14 +96,16 @@ public class UrlController {
 	}
 	@CrossOrigin(origins = "http://localhost:3000")
 	@PostMapping(path= "", consumes = "application/json", produces = "text/plain")
-	ResponseEntity<String> create(@RequestBody Url url) {
-		if(Commons.isValidURL(url.getOriginalUrl())) {
-			if(url.getOriginalUrl().length() > 2000)
+	ResponseEntity<String> create(@RequestBody UrlDto request) {
+		if(Commons.isValidURL(request.getUrl().getOriginalUrl())) {
+			if(request.getUrl().getOriginalUrl().length() > 2000)
 				return new ResponseEntity<String>("max length exceeded", HttpStatus.BAD_REQUEST);
-			String shortURL = urlService.create(url);
-			return new ResponseEntity<String>(shortURL, HttpStatus.CREATED);
+				String shortURL = urlService.create(request.getUrl(),request.getMetadata());
+				return new ResponseEntity<String>(shortURL, HttpStatus.CREATED);
+			
+			
 		}
-		return new ResponseEntity<String>("invalid URL", HttpStatus.BAD_REQUEST);		
+		return new ResponseEntity<String>("invalid URL or MetaData", HttpStatus.BAD_REQUEST);		
 	}
 	
 }
