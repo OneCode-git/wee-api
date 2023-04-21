@@ -3,15 +3,22 @@
  */
 package com.wee.controller;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
+import java.util.StringTokenizer;
 import java.util.UUID;
 
+
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -29,6 +36,9 @@ import com.wee.service.UrlClickService;
 import com.wee.service.UrlService;
 import com.wee.util.Commons;
 
+import eu.bitwalker.useragentutils.UserAgent;
+
+
 /**
  * @author chaitu
  *
@@ -42,21 +52,28 @@ public class UrlController {
 	
 	
 	@GetMapping("{hash}")
-	void redirect(@PathVariable("hash") String hash, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgent) {
+	void redirect(@PathVariable("hash") String hash, HttpServletRequest request,
+			HttpServletResponse httpServletResponse, @RequestHeader("User-Agent") String userAgentString) {
 		Optional<Url> oUrl = urlService.findByHash(hash);
-//		urlClickService.save(userAgent, hash);
-		oUrl.ifPresent(url->{
-		    httpServletResponse.setHeader("Location", url.getOriginalUrl());
-		    httpServletResponse.setStatus(302);
+		String ipAddress = urlClickService.getIpAddress(request);
+		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
+		List<String> userAgentDerivatives = urlClickService.getValuesFromUserAgent(userAgent);
+		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
+		oUrl.ifPresent(url -> {
+			httpServletResponse.setHeader("Location", url.getOriginalUrl());
+			httpServletResponse.setStatus(302);
 		});
-		
+
 	}
 	
 	
 	@GetMapping("c/{hash}")
-	void redirectWithClickId(@PathVariable("hash") String hash, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgent) {
+	void redirectWithClickId(@PathVariable("hash") String hash,HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
 		Optional<Url> oUrl = urlService.findByHash(hash);
-//		urlClickService.save(userAgent, hash);
+		String ipAddress = urlClickService.getIpAddress(request);
+		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
+		List<String> userAgentDerivatives = urlClickService.getValuesFromUserAgent(userAgent);
+		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
 		oUrl.ifPresent(url->{
 			String templateURL = url.getOriginalUrl();
 			String finalURL = templateURL.replace("%7Bclick_id%7D", UUID.randomUUID().toString());
