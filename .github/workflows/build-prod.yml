@@ -1,8 +1,5 @@
 on:
-  push:
-    branches:
-      - githubactions-newprod 
-      - PL-575-3
+  workflow_dispatch:
   
 env:
   AWS_Region: ap-south-1
