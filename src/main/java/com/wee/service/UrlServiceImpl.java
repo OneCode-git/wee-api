@@ -50,6 +50,9 @@ public class UrlServiceImpl implements UrlService{
 	
 	String generateTinyUrl(Url url) {
 		String hash = Commons.genHash(url.getOriginalUrl());
+		if (isCollisionDetected(hash)){
+			generateTinyUrl(url);
+		}
 		url.setHash(hash);
 		try {
 			urlRepo.save(url);
@@ -57,6 +60,14 @@ public class UrlServiceImpl implements UrlService{
 			return generateTinyUrl(url);
 		}
 		return hash;
+	}
+
+	public  boolean isCollisionDetected(String hash) {
+		Optional<Url> url = urlRepo.findById(hash);
+		if (url.isPresent()) {
+			return true;
+		}
+		return false;
 	}
 
 }
