@@ -29,7 +29,7 @@ public class UrlServiceImpl implements UrlService{
 	@Autowired UrlMapper urlMapper;
 	@Value("${wee.base.url}")
 	String weeBaseUrl;
-	
+
 	/* (non-Javadoc)
 	 * @see com.wee.service.UrlService#findByHash()
 	 */
@@ -49,9 +49,12 @@ public class UrlServiceImpl implements UrlService{
 		}
 		return weeBaseUrl+hash;
 	}
-	
+
 	String generateTinyUrl(Url url) {
 		String hash = Commons.genHash(url.getOriginalUrl());
+		if (isCollisionDetected(hash)){
+			generateTinyUrl(url);
+		}
 		Timestamp created_at  = new Timestamp(System.currentTimeMillis());
 		url.setHash(hash);
 		url.setCreatedTs(created_at);
@@ -61,6 +64,14 @@ public class UrlServiceImpl implements UrlService{
 			return generateTinyUrl(url);
 		}
 		return hash;
+	}
+
+	public  boolean isCollisionDetected(String hash) {
+		Optional<Url> url = urlRepo.findById(hash);
+		if (url.isPresent()) {
+			return true;
+		}
+		return false;
 	}
 
 }
