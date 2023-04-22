@@ -1,3 +1,4 @@
+  SECRETMANAGER_CONFIG: aws-secretsmanager:/staging/wee-api}
   BASE_URL: https://wee-eks.bnking.in/
   GRADLE_HOME: /usr/local/gradle
   M2: /usr/local/apache-maven/bin
