@@ -3,7 +3,10 @@ global:
 appName: wee-api
 namespace: production
 serviceport: 80
-#replicas: 2
+
+minreplicas: 1
+maxreplicas: 10
+
 targetport: 5007
 #hosts: "*.zetapp.in"
 dnsname: wee.bnking.in
