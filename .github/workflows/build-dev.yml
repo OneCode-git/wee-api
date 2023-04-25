@@ -91,17 +91,7 @@ jobs:
         push: true
         tags: ${{ env.Container_Registry_NAME }}:latest
         
-    - name: Create kube config
-      run: |
-              aws eks update-kubeconfig --region "${{ env.Region }}" --name "${{ env.ClusterName }}"
-              
-      
-    -  name: Helm Deploy
-       run: |
-             aws eks update-kubeconfig --region "${{ env.Region }}" --name "${{ env.ClusterName }}"
-             helm upgrade --install "${{ env.AppName }}" ./deployment-files/helm/  -f ./deployment-files/helm/"${{ env.ValuesFile }}" -n "${{ env.NameSpace }}" --set image.repository=${{ env.Container_Registry_NAME }} --set region="${{ env.Region }}" --debug 
-             
-             rm ~/.kube/config
+
              
     - name: Slack Notification
       uses: rtCamp/action-slack-notify@v2
