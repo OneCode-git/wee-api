@@ -96,11 +96,11 @@ public class UrlController {
 	}
 	@CrossOrigin(origins = "http://localhost:3000")
 	@PostMapping(path= "", consumes = "application/json", produces = "text/plain")
-	ResponseEntity<String> create(@RequestBody UrlDto request) {
-		if(Commons.isValidURL(request.getUrl().getOriginalUrl())) {
-			if(request.getUrl().getOriginalUrl().length() > 2000)
+	ResponseEntity<String> create(@RequestBody Url request) {
+		if(Commons.isValidURL(request.getOriginalUrl())) {
+			if(request.getOriginalUrl().length() > 2000)
 				return new ResponseEntity<String>("max length exceeded", HttpStatus.BAD_REQUEST);
-				String shortURL = urlService.create(request.getUrl(),request.getMetadata());
+				String shortURL = urlService.create(request,request.getMetadata());
 				return new ResponseEntity<String>(shortURL, HttpStatus.CREATED);
 			
 			
