@@ -53,7 +53,7 @@ jobs:
       with:
          gradle-version: 6.0.1
          
-     - name: Execute Gradle wrapper
+    - name: Execute Gradle wrapper
       run: gradle wrapper
       
     - name: Execute Gradle build
