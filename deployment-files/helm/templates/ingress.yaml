@@ -15,7 +15,7 @@ metadata:
     alb.ingress.kubernetes.io/scheme: internet-facing
     alb.ingress.kubernetes.io/target-type: instance
     alb.ingress.kubernetes.io/subnets: {{ .Values.subnet }}
-    #alb.ingress.kubernetes.io/success-codes: 200-403
+    alb.ingress.kubernetes.io/backend-protocol: HTTPS
     alb.ingress.kubernetes.io/success-codes: '200'
     alb.ingress.kubernetes.io/healthcheck-protocol: HTTP
     alb.ingress.kubernetes.io/healthcheck-path: /actuator/health
