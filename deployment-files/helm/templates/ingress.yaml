@@ -27,7 +27,7 @@ metadata:
 #Change group name as per requirement    
 
 spec:
-  ingressClassName: "{{ .Values.global.env  }}-ingress-class"
+  ingressClassName: "{{ .Values.global.ingressclass   }}-ingress-class"
 #   tls:
 #   - hosts:
 #     - "{{ .Values.hosts }}"

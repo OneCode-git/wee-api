@@ -1,19 +1,19 @@
 global:
-  env: production
+  env: preprod
   ingressclass: production
 appName: wee-api
-namespace: production
-
+namespace: preprod
 serviceport: 80
 targetport: 5007
+
 
 maxReplicas: 10
 minReplicas: 1
 
-dnsname: wee.bnking.in
+dnsname: wee.preprod.bnking.in
 subnet: subnet-06a741cebaf0f7819,subnet-06e90286ced3c92b3,subnet-026043a113ecb3b3a
-LBname: production-eks-lbingress
+LBname: preprod-eks-lbingress
 
 image:
-  name: 887417737466.dkr.ecr.ap-south-1.amazonaws.com/wee-api-prod
+  name: 887417737466.dkr.ecr.ap-south-1.amazonaws.com/wee-api-preprod
   tag: latest

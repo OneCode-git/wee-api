@@ -1,11 +1,19 @@
 global:
   env: staging
+  ingressclass: staging
 appName: wee-api
 namespace: staging
+
+maxReplicas: 10
+minReplicas: 1
+
 serviceport: 80
 targetport: 5007
-# hosts: "*.bnking.in"
+
+
+
 dnsname: wee-eks.bnking.in
+
 subnet: subnet-2568bb5e,subnet-c6bbe0ae,subnet-ae8e06e2
 LBname: staging-eks-lbingress
 
