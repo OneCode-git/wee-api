@@ -14,3 +14,4 @@ spec:
     targetPort: {{ .Values.targetport }}
   selector:
     access: {{ .Values.appName }}
+

@@ -6,12 +6,13 @@ metadata:
   labels:
     access: {{ .Values.appName  }}
 spec:
-  ##replicas: {{ .Values.replicas }}
+  # replicas: {{ .Values.replicas }}
+  revisionHistoryLimit : 0
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
+      maxSurge: 1
+      maxUnavailable: 1
   selector:
     matchLabels:
       access: {{ .Values.appName  }}
@@ -31,10 +32,16 @@ spec:
           containerPort: {{ .Values.targetport }}
         readinessProbe:
             httpGet:
-              path: /actuator/health
+              path: /actuator/health/readiness
               port: {{ .Values.targetport }}
-            initialDelaySeconds: 60
+            initialDelaySeconds: 30
             periodSeconds: 10
+        # livenessProbe:
+        #     httpGet:
+        #       path: /actuator/health/liveness
+        #       port: {{ .Values.targetport }}
+        #     initialDelaySeconds: 60
+        #     periodSeconds: 10
         envFrom:
             - configMapRef:
                 name:  "{{ .Values.appName }}-{{ .Values.global.env  }}-configmap"
