@@ -84,8 +84,7 @@ jobs:
     - name: Create kube config
       run: |
               aws eks update-kubeconfig --region "${{ env.Region }}" --name "${{ env.ClusterName }}"
-              
-      
+                    
     - name: Helm Deploy
       run: |
              aws eks update-kubeconfig --region "${{ env.Region }}" --name "${{ env.ClusterName }}"
