@@ -11,8 +11,8 @@ spec:
   strategy:
     type: RollingUpdate
     rollingUpdate:
-      maxSurge: 1
-      maxUnavailable: 1
+      maxSurge: 25%
+      maxUnavailable: 25%
   selector:
     matchLabels:
       access: {{ .Values.appName  }}
