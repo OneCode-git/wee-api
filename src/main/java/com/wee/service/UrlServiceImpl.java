@@ -3,6 +3,8 @@
  */
 package com.wee.service;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,21 +42,25 @@ public class UrlServiceImpl implements UrlService{
 	 * @see com.wee.service.UrlService#create(com.wee.entity.Url)
 	 */
 	@Override
-	public String create(Url url) {
-		String hash = generateTinyUrl(url);
+	public String create(Url url, String metadata) {
+		String hash = generateTinyUrl(url,metadata);
+		
 		if (url.getGenClickId() != null && url.getGenClickId() == true) {
 			return weeBaseUrl+ "c/" + hash;
 		}
 		return weeBaseUrl+hash;
 	}
 	
-	String generateTinyUrl(Url url) {
+	String generateTinyUrl(Url url, String metadata) {
 		String hash = Commons.genHash(url.getOriginalUrl());
+		Timestamp created_at  = new Timestamp(System.currentTimeMillis());
 		url.setHash(hash);
+		url.setMetadat(metadata);
+		url.setCreatedTs(created_at);
 		try {
 			urlRepo.save(url);
 		}catch (DataIntegrityViolationException e) {
-			return generateTinyUrl(url);
+			return generateTinyUrl(url,metadata);
 		}
 		return hash;
 	}
