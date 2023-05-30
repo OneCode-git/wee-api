@@ -5,6 +5,8 @@ package com.wee.service;
 
 import java.util.Optional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -14,6 +16,8 @@ import com.wee.entity.Url;
 import com.wee.mybatis.mapper.UrlMapper;
 import com.wee.repo.UrlRepo;
 import com.wee.util.Commons;
+import java.sql.Timestamp;
+import java.util.Date;
 
 /**
  * @author chaitu
@@ -21,7 +25,7 @@ import com.wee.util.Commons;
  */
 @Service
 public class UrlServiceImpl implements UrlService{
-
+	private static final Logger logger = LoggerFactory.getLogger(UrlClickServiceImpl.class);
 	@Autowired
 	UrlRepo urlRepo;
 	@Autowired UrlMapper urlMapper;
@@ -50,13 +54,17 @@ public class UrlServiceImpl implements UrlService{
 	
 	String generateTinyUrl(Url url) {
 		String hash = Commons.genHash(url.getOriginalUrl());
+		Timestamp created_at  = new Timestamp(System.currentTimeMillis());
 		if (isCollisionDetected(hash)){
 			generateTinyUrl(url);
 		}
 		url.setHash(hash);
+		url.setCreatedTs(created_at);
 		try {
 			urlRepo.save(url);
+			logger.info("Saved tiny url for url: "+url+" successfully");
 		}catch (DataIntegrityViolationException e) {
+			logger.error("Failed to save tiny url for url: "+url);
 			return generateTinyUrl(url);
 		}
 		return hash;
