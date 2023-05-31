@@ -44,28 +44,29 @@ public class UrlServiceImpl implements UrlService{
 	 * @see com.wee.service.UrlService#create(com.wee.entity.Url)
 	 */
 	@Override
-	public String create(Url url) {
-		String hash = generateTinyUrl(url);
+	public String create(Url url, String metadata) {
+		String hash = generateTinyUrl(url,metadata);
 		if (url.getGenClickId() != null && url.getGenClickId() == true) {
 			return weeBaseUrl+ "c/" + hash;
 		}
 		return weeBaseUrl+hash;
 	}
 	
-	String generateTinyUrl(Url url) {
+	String generateTinyUrl(Url url , String metadata) {
 		String hash = Commons.genHash(url.getOriginalUrl());
 		Timestamp created_at  = new Timestamp(System.currentTimeMillis());
 		if (isCollisionDetected(hash)){
-			generateTinyUrl(url);
+			generateTinyUrl(url,metadata);
 		}
 		url.setHash(hash);
 		url.setCreatedTs(created_at);
+		url.setMetadata(metadata);
 		try {
 			urlRepo.save(url);
 			logger.info("Saved tiny url for url: "+url+" successfully");
 		}catch (DataIntegrityViolationException e) {
 			logger.error("Failed to save tiny url for url: "+url);
-			return generateTinyUrl(url);
+			return generateTinyUrl(url,metadata);
 		}
 		return hash;
 	}

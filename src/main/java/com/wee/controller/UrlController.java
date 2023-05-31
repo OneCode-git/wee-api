@@ -59,19 +59,18 @@ public class UrlController {
 		    httpServletResponse.setStatus(302);
 		    LOGGER.info("Redirected request for hash:  "+hash+ " with user-Agent: "+userAgent);
 		});
-		
 	}
 	
 	
 	@GetMapping("c/{hash}")
-	void redirectWithClickId(@PathVariable("hash") String hash,HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
+	void redirectWithClickId(@PathVariable("hash") String hash,HttpServletRequest request,HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
 		LOGGER.info("Redirect request recieved to store clickID for hash:  "+hash+ " with user-Agent: "+userAgentString);
 		Optional<Url> oUrl = urlService.findByHash(hash);
 //		urlClickService.save(userAgent, hash);
-//		String ipAddress = urlClickService.getIpAddress(userAgentString);
+		String ipAddress = urlClickService.getIpAddress(request);
 		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
 		List<String> userAgentDerivatives = urlClickService.getValuesFromUserAgent(userAgent);
-		urlClickService.saveInUrlClick(userAgentString, hash, "", userAgentDerivatives );
+		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
 		oUrl.ifPresent(url->{
 			String templateURL = url.getOriginalUrl();
 			String finalURL = templateURL.replace("%7Bclick_id%7D", UUID.randomUUID().toString());
@@ -80,7 +79,7 @@ public class UrlController {
 		    httpServletResponse.setStatus(302);
 		    LOGGER.info("Redirected request to store clickID for hash:  "+hash+ " with user-Agent: "+userAgent);
 		});
-		
+
 	}
 	
 	@GetMapping("details/{hash}")
@@ -90,16 +89,16 @@ public class UrlController {
 	}
 	@CrossOrigin(origins = "http://localhost:3000")
 	@PostMapping(path= "", consumes = "application/json", produces = "text/plain")
-	ResponseEntity<String> create(@RequestBody Url url) {
-		LOGGER.info("Create request recieved for url:  "+url);
-		if(Commons.isValidURL(url.getOriginalUrl())) {
-			if(url.getOriginalUrl().length() > 2000)
+	ResponseEntity<String> create(@RequestBody Url request) {
+		LOGGER.info("Create request recieved for url:  "+request);
+		if(Commons.isValidURL(request.getOriginalUrl())) {
+			if(request.getOriginalUrl().length() > 2000)
 				return new ResponseEntity<String>("max length exceeded", HttpStatus.BAD_REQUEST);
-			String shortURL = urlService.create(url);
-			LOGGER.info("Create request recieved for url:  "+url+" processed successfully");
+			String shortURL = urlService.create(request,request.getMetadata());
+			LOGGER.info("Create request received for url:  "+request+" processed successfully");
 			return new ResponseEntity<String>(shortURL, HttpStatus.CREATED);
 		}
-		return new ResponseEntity<String>("invalid URL", HttpStatus.BAD_REQUEST);		
+		return new ResponseEntity<String>("invalid URL or meta data", HttpStatus.BAD_REQUEST);
 	}
 	
 }
