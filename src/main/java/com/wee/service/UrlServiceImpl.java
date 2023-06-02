@@ -3,6 +3,8 @@
  */
 package com.wee.service;
 
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.Optional;
 
 import org.slf4j.Logger;
@@ -31,7 +33,7 @@ public class UrlServiceImpl implements UrlService{
 	@Autowired UrlMapper urlMapper;
 	@Value("${wee.base.url}")
 	String weeBaseUrl;
-	
+
 	/* (non-Javadoc)
 	 * @see com.wee.service.UrlService#findByHash()
 	 */
