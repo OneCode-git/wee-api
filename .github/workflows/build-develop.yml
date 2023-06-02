@@ -6,6 +6,7 @@ on:
 env:
   AWS_Region: ap-south-1
 
+
 jobs:
   compile-test-build:
     runs-on: ubuntu-latest
@@ -41,6 +42,7 @@ jobs:
         distribution: 'adopt'
         cache: gradle
 
+
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
       with:
@@ -57,7 +59,8 @@ jobs:
       uses: docker/login-action@v2
       with:
         registry: ${{ env.Container_Registry_NAME }}
-          
+   
+       
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
       
@@ -81,7 +84,7 @@ jobs:
     - name: Create kube config
       run: |
               aws eks update-kubeconfig --region "${{ env.Region }}" --name "${{ env.ClusterName }}"
-
+                    
     - name: Helm Deploy
       run: |
              aws eks update-kubeconfig --region "${{ env.Region }}" --name "${{ env.ClusterName }}"
