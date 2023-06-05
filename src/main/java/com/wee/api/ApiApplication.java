@@ -13,7 +13,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableJpaRepositories(basePackages= {"com.wee"})
 @EntityScan(basePackages= {"com.wee"})
 @MapperScan(basePackages= {"com.wee.mybatis.mapper"})
-@EnableAsync
 public class ApiApplication {
 
 	public static void main(String[] args) {
