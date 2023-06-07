@@ -7,7 +7,7 @@ namespace: production
 serviceport: 80
 targetport: 5007
 
-maxReplicas: 10
+maxReplicas: 3
 minReplicas: 1
 
 dnsname: wee.bnking.in
