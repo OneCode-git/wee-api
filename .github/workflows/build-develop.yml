@@ -1,8 +1,7 @@
 on:
   push:
     branches:
-      - develop
-    
+      - develop   
 env:
   AWS_Region: ap-south-1
 
