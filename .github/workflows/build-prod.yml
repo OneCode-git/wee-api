@@ -1,9 +1,7 @@
 on:
-  pull_request_target:
-    types:
-      - closed
+  push:
     branches:
-      - 'master'
+      - revert-15-LF-635
     
 env:
   AWS_Region: ap-south-1
@@ -11,7 +9,7 @@ env:
 
 jobs:
   deploy:
-    if: github.event.pull_request.merged == true
+#     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     timeout-minutes: 15
     
