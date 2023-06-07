@@ -8,6 +8,7 @@ on:
 env:
   AWS_Region: ap-south-1
 
+
 jobs:
   compile-test-build:
     if: github.event.pull_request.merged == true
