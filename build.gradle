@@ -27,25 +27,19 @@ repositories {
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	compile group: 'com.amazonaws', name: 'aws-java-sdk-secretsmanager', version: '1.11.355'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.1'
-	implementation 'com.github.ua-parser:uap-java:1.5.4'
-//	implementation 'com.microsoft.azure:azure-functions-java-worker:1.6.2'
-	implementation group: 'com.mysql', name: 'mysql-connector-j', version: '8.0.32'
-	implementation group: 'com.blueconic', name: 'browscap-java', version: '1.2.0'
-	compile group: 'com.moilioncircle', name: 'user-agent-utils', version: '1.53'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation group: 'com.mysql', name: 'mysql-connector-j', version: '8.0.32'
-
+	
 	implementation group: 'com.blueconic', name: 'browscap-java', version: '1.2.0'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	annotationProcessor 'org.projectlombok:lombok'
-
+	
 		runtimeOnly 'org.postgresql:postgresql'
-
-
+	
+	
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
