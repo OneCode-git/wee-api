@@ -17,7 +17,6 @@ public class EventsLogHelper {
     private final PublishService publishService;
     public void addAgentEvent(JSONObject metaData){
         HashMap<String,String> attributes = new HashMap<>();
-       // String s =(String) metaData.getString("userId");
         attributes.put("userId", String.valueOf(metaData.get("userId")));
         attributes.put("type",metaData.getString("type"));
         attributes.put("referenceId", String.valueOf(metaData.get("referenceId")));

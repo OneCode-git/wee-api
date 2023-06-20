@@ -46,8 +46,6 @@ public class UrlController {
 	@Autowired
 	EventsLogHelper eventsLogHelper;
 	@Autowired UrlClickService urlClickService;
-
-	ObjectMapper objectMapper=new ObjectMapper() ;
 		
 	@GetMapping("{hash}")
 	void redirect(@PathVariable("hash") String hash,HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
@@ -58,7 +56,6 @@ public class UrlController {
 			eventsLogHelper.addAgentEvent(metaData);
 
 		}
-//		urlClickService.save(userAgent, hash);
 		String ipAddress = urlClickService.getIpAddress(request);
 		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
 		List<String> userAgentDerivatives = urlClickService.getValuesFromUserAgent(userAgent);

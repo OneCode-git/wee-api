@@ -15,8 +15,6 @@ import javax.persistence.Transient;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import netscape.javascript.JSObject;
-import org.json.JSONObject;
 
 /**
  * @author chaitu

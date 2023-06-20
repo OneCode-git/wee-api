@@ -19,8 +19,7 @@ public class PublishService {
     @Autowired
      Environment environment;
 
-
-//    @Autowired
+    @Autowired
      SnsClient snsClient;
     static String EVENT_ARN = "aws_sns_event_arn";
     
@@ -41,9 +40,9 @@ public class PublishService {
                     .topicArn(environment.getProperty(EVENT_ARN))
                     .build();
             PublishResponse publish = snsClient.publish(request);
-            log.info("{}", publish);
+            log.info("Publish Message {}", publish);
         } catch (SnsException e) {
-            log.error(e.awsErrorDetails().errorMessage(), e);
+            log.error("Error Response {}", e);
         }
     }
 }
