@@ -18,8 +18,6 @@ import software.amazon.awssdk.services.sns.model.SnsException;
 public class PublishService {
     @Autowired
      Environment environment;
-
-    @Autowired
      SnsClient snsClient;
     static String EVENT_ARN = "aws_sns_event_arn";
     
@@ -32,12 +30,11 @@ public class PublishService {
                 .build();
     }
 
-    public void logEvents(String payload) {
-
+    public void logEvents(String payload, String eventArn) {
         try {
-           PublishRequest request = PublishRequest.builder()
+            PublishRequest request = PublishRequest.builder()
                     .message(payload)
-                    .topicArn(environment.getProperty(EVENT_ARN))
+                    .topicArn(eventArn)
                     .build();
             PublishResponse publish = snsClient.publish(request);
             log.info("Publish Message {}", publish);
@@ -45,4 +42,5 @@ public class PublishService {
             log.error("Error Response {}", e);
         }
     }
+
 }

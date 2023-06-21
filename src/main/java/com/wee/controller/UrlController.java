@@ -13,6 +13,7 @@ import com.wee.entity.EventsLogHelper;
 import netscape.javascript.JSObject;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.http.HttpStatus;
@@ -46,19 +47,32 @@ public class UrlController {
 	@Autowired
 	EventsLogHelper eventsLogHelper;
 	@Autowired UrlClickService urlClickService;
+
+	@Value("${wee.base.url}")
+	String weeBaseUrl;
 		
 	@GetMapping("{hash}")
 	void redirect(@PathVariable("hash") String hash,HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
 		LOGGER.info("Redirect request recieved for hash:  "+hash+ " with user-Agent: "+userAgentString);
 		Optional<Url> oUrl = urlService.findByHash(hash);
-        if(oUrl.isPresent()){
-			JSONObject metaData = new JSONObject(oUrl.get().getMetadata());
-			eventsLogHelper.addAgentEvent(metaData);
-
-		}
 		String ipAddress = urlClickService.getIpAddress(request);
 		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
 		List<String> userAgentDerivatives = urlClickService.getValuesFromUserAgent(userAgent);
+		if(oUrl.isPresent()){
+			JSONObject metaData = new JSONObject(oUrl.get().getMetadata());
+			metaData.put("Browser",userAgentDerivatives.get(0));
+			metaData.put("BrowserMajorVersion",userAgentDerivatives.get(1));
+			metaData.put("DeviceType",userAgentDerivatives.get(2));
+			metaData.put("ipAddress",ipAddress);
+			String Url="";
+			if(oUrl.get().getGenClickId()!=null && oUrl.get().getGenClickId()){
+				Url = weeBaseUrl+ "c/" + hash;
+			}
+			else
+				Url = weeBaseUrl+hash;
+			metaData.put("Url",Url);
+			eventsLogHelper.addAgentEvent(metaData);
+		}
 		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
 		oUrl.ifPresent(url->{
 					httpServletResponse.setHeader("Location", url.getOriginalUrl());
