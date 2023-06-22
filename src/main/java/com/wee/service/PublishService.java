@@ -19,7 +19,6 @@ public class PublishService {
     @Autowired
      Environment environment;
 
-    @Autowired
      SnsClient snsClient;
     static String EVENT_ARN = "aws_sns_event_arn";
     
