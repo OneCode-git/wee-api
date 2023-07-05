@@ -59,7 +59,7 @@ public class UrlController {
 		String ipAddress = urlClickService.getIpAddress(request);
 		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
 		List<String> userAgentDerivatives = urlClickService.getValuesFromUserAgent(userAgent);
-		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
+//		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
 		oUrl.ifPresent(url->{
 			JSONObject metaData = new JSONObject(oUrl.get().getMetadata());
 			metaData.put("Browser",userAgentDerivatives.get(0));
@@ -73,8 +73,8 @@ public class UrlController {
 			else
 				Url = weeBaseUrl+hash;
 			metaData.put("Url",Url);
-			eventsLogHelper.addAgentEvent(metaData);
-					httpServletResponse.setHeader("Location", url.getOriginalUrl());
+//			eventsLogHelper.addAgentEvent(metaData);
+//					httpServletResponse.setHeader("Location", url.getOriginalUrl());
 		    httpServletResponse.setStatus(302);
 		    LOGGER.info("Redirected request for hash:  "+hash+ " with user-Agent: "+userAgent);
 		});
