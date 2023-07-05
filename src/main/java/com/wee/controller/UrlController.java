@@ -48,6 +48,7 @@ public class UrlController {
 	EventsLogHelper eventsLogHelper;
 	@Autowired UrlClickService urlClickService;
 
+	
 	@Value("${wee.base.url}")
 	String weeBaseUrl;
 
