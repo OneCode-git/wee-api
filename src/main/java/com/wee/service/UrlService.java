@@ -3,10 +3,9 @@
  */
 package com.wee.service;
 
-
 import java.util.Optional;
-import com.wee.entity.Url;
 
+import com.wee.entity.Url;
 
 /**
  * @author chaitu
@@ -14,5 +13,5 @@ import com.wee.entity.Url;
  */
 public interface UrlService {
 	Optional<Url> findByHash(String hash);
-	String create(Url url, String metadata);
+	String create(Url url);
 }

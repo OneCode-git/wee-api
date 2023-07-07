@@ -3,18 +3,14 @@
  */
 package com.wee.controller;
 
-import java.util.*;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpServletRequest;
+import java.util.Date;
+import java.util.Optional;
+import java.util.UUID;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wee.entity.EventsLogHelper;
-import netscape.javascript.JSObject;
-import org.json.JSONObject;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,8 +38,6 @@ import com.wee.util.Commons;
 public class UrlController {
 
 	@Autowired UrlService urlService;
-	@Autowired
-	EventsLogHelper eventsLogHelper;
 	@Autowired UrlClickService urlClickService;
 
 
@@ -80,14 +74,11 @@ public class UrlController {
 	}
 	@CrossOrigin(origins = "http://localhost:3000")
 	@PostMapping(path= "", consumes = "application/json", produces = "text/plain")
-	ResponseEntity<String> create(@RequestBody Url request) throws JsonProcessingException {
-//		LOGGER.info("Create request recieved for url:  "+request);
-		if(Commons.isValidURL(request.getOriginalUrl())) {
-			if(request.getOriginalUrl().length() > 2000)
+	ResponseEntity<String> create(@RequestBody Url url) {
+		if(Commons.isValidURL(url.getOriginalUrl())) {
+			if(url.getOriginalUrl().length() > 2000)
 				return new ResponseEntity<String>("max length exceeded", HttpStatus.BAD_REQUEST);
-
-			String shortURL = urlService.create(request, request.getMetadata());
-//			LOGGER.info("Create request received for url:  "+request+" processed successfully");
+			String shortURL = urlService.create(url);
 			return new ResponseEntity<String>(shortURL, HttpStatus.CREATED);
 		}
 		return new ResponseEntity<String>("invalid URL", HttpStatus.BAD_REQUEST);
