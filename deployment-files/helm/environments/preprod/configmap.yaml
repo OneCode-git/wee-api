@@ -1,7 +1,3 @@
+ACTIVE_PROFILE: preprod
 SECRETMANAGER_CONFIG: "aws-secretsmanager:/preprod/wee-api"
-BASE_URL: https://wee.preprod.bnking.in/
-GRADLE_HOME: /usr/local/gradle
-M2: /usr/local/apache-maven/bin
-M2_HOME: /usr/local/apache-maven
-SERVER_PORT: "5007"
-_JAVA_OPTIONS: -javaagent:/var/newrelic.jar -Dnewrelic.config.app_name=wee-preprod-eks -Dnewrelic.config.license_key=7e496d7961ed578c800942b3fd949672fd3dNRAL -Xms256m
+_JAVA_OPTIONS: -javaagent:/var/newrelic.jar -Dnewrelic.config.app_name=wee-preprod-eks -Dnewrelic.config.license_key=68091cd17960f5b4a1ea1ca600708bc38876NRAL
