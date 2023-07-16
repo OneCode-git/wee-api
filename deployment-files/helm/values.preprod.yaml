@@ -3,17 +3,30 @@ global:
   ingressclass: production
 appName: wee-api
 namespace: preprod
+
 serviceport: 80
 targetport: 5007
 
 
-maxReplicas: 10
+maxReplicas: 5
 minReplicas: 1
 
-dnsname: wee.preprod.bnking.in
 subnet: subnet-06a741cebaf0f7819,subnet-06e90286ced3c92b3,subnet-026043a113ecb3b3a
 LBname: preprod-eks-lbingress
 
+dnsname: wee.preprod.bnking.in
+
+healthPath: /actuator/health/readiness
+
 image:
-  name: 887417737466.dkr.ecr.ap-south-1.amazonaws.com/wee-api-preprod
+  repository: 887417737466.dkr.ecr.ap-south-1.amazonaws.com/wee-api-preprod
   tag: latest
+
+resources:
+  requests:
+    cpu: 1
+    memory: "1Gi"
+  limits:
+    cpu: 2
+    memory: "1.5Gi"
+

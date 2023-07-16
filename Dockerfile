@@ -12,7 +12,4 @@ COPY --from=downloader newrelic/newrelic.jar /var/
 COPY build/libs/wee-api-0.0.1-SNAPSHOT.jar /app
 ENV PATH="${PATH}:/app"
 EXPOSE 5007
-#ENV newrelic.config.app_name lms-staging-arm
-#ENV newrelic.config.license_key 68091cd17960f5b4a1ea1ca600708bc38876NRAL
-
 ENTRYPOINT ["java","-javaagent:/var/newrelic.jar", "-jar","/app/wee-api-0.0.1-SNAPSHOT.jar"]
