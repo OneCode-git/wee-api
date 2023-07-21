@@ -5,11 +5,8 @@ package com.wee.service;
 
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.Map;
 import java.util.Optional;
 
-import netscape.javascript.JSObject;
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,37 +53,34 @@ public class UrlServiceImpl implements UrlService{
 		}
 		return weeBaseUrl+hash;
 	}
+<<<<<<<<< Temporary merge branch 1
 
-	String convertIntoJsonString(String metaData){
-
-
-		// Replace equal sign with colon
-		String jsonString = metaData.replaceAll("=", ":");
-
-		// Create a JSONObject from the string
-		JSONObject jsonObject = new JSONObject(jsonString);
-
-		// Convert the JSONObject to a JSON string
-		String newMetaData = jsonObject.toString();
-		return newMetaData;
-	}
+	String generateTinyUrl(Url url) {
+		String hash = Commons.genHash(url.getOriginalUrl());
+		if (isCollisionDetected(hash)){
+			generateTinyUrl(url);
+		}
+		Timestamp created_at  = new Timestamp(System.currentTimeMillis());
+		url.setHash(hash);
+		url.setCreatedTs(created_at);
+=========
 	
-	String generateTinyUrl(Url url , String metaData) {
+	String generateTinyUrl(Url url , String metadata) {
 		String hash = Commons.genHash(url.getOriginalUrl());
 		Timestamp created_at  = new Timestamp(System.currentTimeMillis());
 		if (isCollisionDetected(hash)){
-			generateTinyUrl(url,metaData);
+			generateTinyUrl(url,metadata);
 		}
-		String jsonMetaData = convertIntoJsonString(metaData);
 		url.setHash(hash);
 		url.setCreatedTs(created_at);
-		url.setMetadata(jsonMetaData);
+		url.setMetadata(metadata);
+>>>>>>>>> Temporary merge branch 2
 		try {
 			urlRepo.save(url);
 			logger.info("Saved tiny url for url: "+url+" successfully");
 		}catch (DataIntegrityViolationException e) {
 			logger.error("Failed to save tiny url for url: "+url);
-			return generateTinyUrl(url,metaData);
+			return generateTinyUrl(url,metadata);
 		}
 		return hash;
 	}
