@@ -8,13 +8,11 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wee.entity.EventsLogHelper;
-import netscape.javascript.JSObject;
+import in.zet.commons.utils.RedisUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -32,8 +30,6 @@ import com.wee.entity.Url;
 import com.wee.service.UrlClickService;
 import com.wee.service.UrlService;
 import com.wee.util.Commons;
-import javax.servlet.http.HttpServletRequest;
-import java.util.StringTokenizer;
 
 /**
  * @author chaitu
@@ -120,6 +116,14 @@ public class UrlController {
 			return new ResponseEntity<String>(shortURL, HttpStatus.CREATED);
 		}
 		return new ResponseEntity<String>("invalid URL or meta data", HttpStatus.BAD_REQUEST);
+	}
+
+	@PostMapping(path= "redis", consumes = "application/json", produces = "text/plain")
+	ResponseEntity<Object> redis(@RequestBody HashMap<String, String> request) throws JsonProcessingException {
+		LOGGER.info("Create request recieved for url:  "+request);
+		RedisUtils.set(request.get("key"), request.get("value"), 13);
+//		request.get("key");
+		return  ResponseEntity.ok().build();
 	}
 	
 }
