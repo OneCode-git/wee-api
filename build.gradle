@@ -13,6 +13,26 @@ java {
 
 repositories {
 	mavenCentral()
+	maven {
+		credentials {
+			username 'developer'
+			password 'Onecodedeveloper_123!'
+		}
+		url 'https://nexus.zetapp.in/repository/maven-public/'
+		content {
+			includeGroup "in.zet"
+		}
+	}
+	maven {
+		credentials {
+			username 'developer'
+			password 'Onecodedeveloper_123!'
+		}
+		url 'https://nexus.zetapp.in/repository/maven-snapshots/'
+		content {
+			includeGroup "in.zet"
+		}
+	}
 }
 
 configurations {
@@ -31,6 +51,7 @@ dependencies {
 	implementation group: 'io.awspring.cloud', name: 'spring-cloud-starter-aws-secrets-manager-config', version: '2.3.0'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:2.1.1'
+	implementation 'software.amazon.awssdk:sns:2.15.35'
 	implementation 'com.github.ua-parser:uap-java:1.5.4'
 //	implementation 'com.microsoft.azure:azure-functions-java-worker:1.6.2'
 	implementation group: 'com.mysql', name: 'mysql-connector-j', version: '8.0.32'
@@ -38,7 +59,11 @@ dependencies {
 	implementation group: 'eu.bitwalker', name: 'UserAgentUtils', version: '1.21'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 	implementation group: 'com.mysql', name: 'mysql-connector-j', version: '8.0.32'
-
+	implementation group: 'org.json', name: 'json', version: '20230227'
+	implementation ('in.zet:commons:0.0.1')
+	{
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-log4j2'
+	}
 	implementation group: 'com.blueconic', name: 'browscap-java', version: '1.2.0'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
