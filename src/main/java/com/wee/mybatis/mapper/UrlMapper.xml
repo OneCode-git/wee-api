@@ -31,4 +31,35 @@
 				  #{user_ip}
 			  )
 	</insert>
+
+	<insert id="saveInUrlClickBulk">
+
+		insert into url_click
+		(id,
+		url_id,
+		browser,
+		browser_type,
+		browser_major_version,
+		device_type,
+		platform,
+		platform_version,
+		created_ts,
+		user_ip)
+
+		values
+		<foreach collection="urlClickList" item="item" separator="," >
+		(
+		#{item.id},
+		#{item.url_id},
+		#{item.browser},
+		#{item.browser_type},
+		#{item.browser_major_version},
+		#{item.device_type},
+		#{item.platform},
+		#{item.platform_version},
+		#{item.created_ts},
+		#{item.user_ip}
+		)
+		</foreach>
+	</insert>
 </mapper>

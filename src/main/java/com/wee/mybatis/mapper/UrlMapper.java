@@ -9,6 +9,8 @@ import org.apache.ibatis.annotations.Select;
 import com.wee.entity.UrlClick;
 import com.wee.entity.Url;
 
+import java.util.List;
+
 /**
  * @author chaitu
  *
@@ -23,5 +25,5 @@ public interface UrlMapper {
 
 	@Insert("INSERT INTO url_click (user_ip, url_id, browser, browser_type, browser_major_version, device_type, platform, platform_version, created_ts) VALUES (#{userIp}, #{urlId}, #{browser}, #{browserType}, #{browserMajorversion}, #{deviceType}, #{platform}, #{platformVersion}, #{createdTs})")
 	void saveInUrlClick(UrlClick urlClick);
-
+	void saveInUrlClickBulk(List<UrlClick> urlClickList);
 }
