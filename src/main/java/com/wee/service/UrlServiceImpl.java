@@ -5,12 +5,11 @@ package com.wee.service;
 
 import java.sql.Timestamp;
 import java.time.Duration;
-import java.util.Date;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wee.entity.UrlClick;
 import com.wee.util.Constants;
 import in.zet.commons.utils.RedisUtils;
 import netscape.javascript.JSObject;
@@ -141,6 +140,19 @@ public class UrlServiceImpl implements UrlService{
 	}
 
 	public void updateUrlClickDb(){
-//		RedisUtils.get
+		Set<String> keyList = RedisUtils.getKeys(Constants.REDIS_URL_CLICK + "*");
+		List<UrlClick> urlClickList = new ArrayList<>();
+		for(String key : keyList){
+			String redisValue = RedisUtils.get(key);
+			UrlClick urlClick = null;
+			try {
+				urlClick = mapper.readValue(redisValue, UrlClick.class);
+			} catch (Exception e) {
+				logger.error("Failed to read data from redis  : {}", e);
+			}
+			urlClickList.add(urlClick);
+		}
+		urlMapper.saveInUrlClickBulk(urlClickList);
+		keyList.stream().forEach(RedisUtils::del);
 	}
 }

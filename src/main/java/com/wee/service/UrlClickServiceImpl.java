@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -86,7 +87,7 @@ public class UrlClickServiceImpl implements UrlClickService{
 			urlClick.setBrowserMajorversion(userAgentDerivatives.get(1));
 			urlClick.setDeviceType(userAgentDerivatives.get(2));
 
-			String redisKey = Constants.REDIS_URL_CLICK + urlId + "_" + new Timestamp(System.currentTimeMillis());
+			String redisKey = Constants.REDIS_URL_CLICK + urlId + "_" + Instant.now().toEpochMilli();
 			RedisUtils.set(redisKey, mapper.writeValueAsString((urlClick)));
 //			urlMapper.saveInUrlClick(urlClick);
 
