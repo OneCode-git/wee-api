@@ -15,7 +15,7 @@ import eu.bitwalker.useragentutils.UserAgent;
  */
 public interface UrlClickService {
 	UrlClick save(String userAgent, String Urlid);
-	
+
 	List<String> getValuesFromUserAgent(UserAgent userAgent);
 
 	String getIpAddress(HttpServletRequest request);

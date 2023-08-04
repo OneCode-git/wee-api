@@ -54,6 +54,8 @@ dependencies {
 	implementation 'software.amazon.awssdk:sns:2.15.35'
 	implementation 'com.github.ua-parser:uap-java:1.5.4'
 //	implementation 'com.microsoft.azure:azure-functions-java-worker:1.6.2'
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 	implementation group: 'com.mysql', name: 'mysql-connector-j', version: '8.0.32'
 	implementation group: 'com.blueconic', name: 'browscap-java', version: '1.2.0'
 	implementation group: 'eu.bitwalker', name: 'UserAgentUtils', version: '1.21'

@@ -30,7 +30,8 @@ env:
   ECR_REGISTRY: 887417737466.dkr.ecr.ap-south-1.amazonaws.com
   ECR_REPOSITORY: wee-api-staging
   AppName: wee-api
- 
+
+
 jobs:
   Build-Deploy-Service:
     if: ( github.event_name == 'workflow_dispatch' && github.event.inputs.choice  == 'deploy' ) || ( github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.merged == true )

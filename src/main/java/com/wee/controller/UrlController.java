@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.wee.entity.EventsLogHelper;
+import com.wee.service.UrlClickService;
 import in.zet.commons.utils.RedisUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import eu.bitwalker.useragentutils.UserAgent;
 import com.wee.entity.Url;
-import com.wee.service.UrlClickService;
 import com.wee.service.UrlService;
 import com.wee.util.Commons;
 
@@ -42,7 +42,8 @@ public class UrlController {
 	@Autowired UrlService urlService;
 	@Autowired
 	EventsLogHelper eventsLogHelper;
-	@Autowired UrlClickService urlClickService;
+	@Autowired
+	private UrlClickService urlClickService;
 
 	@Value("${wee.base.url}")
 	String weeBaseUrl;
@@ -65,7 +66,7 @@ public class UrlController {
 				Url = weeBaseUrl+ "c/" + hash;
 			}
 			else
-				Url = weeBaseUrl+hash;
+				Url = weeBaseUrl+ "c/" + hash;
 			metaData.put("Url",Url);
 			eventsLogHelper.addAgentEvent(metaData);
 		}
