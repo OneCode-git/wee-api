@@ -15,7 +15,6 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EntityScan(basePackages= {"com.wee"})
 @MapperScan(basePackages= {"com.wee.mybatis.mapper"})
 @EnableAsync
-@EnableCaching
 public class ApiApplication {
 
 	public static void main(String[] args) {

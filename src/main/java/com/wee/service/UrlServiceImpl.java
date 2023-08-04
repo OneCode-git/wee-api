@@ -4,10 +4,15 @@
 package com.wee.service;
 
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wee.util.Constants;
+import in.zet.commons.utils.RedisUtils;
 import netscape.javascript.JSObject;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -35,6 +40,9 @@ public class UrlServiceImpl implements UrlService{
 	@Autowired
 	UrlRepo urlRepo;
 	@Autowired UrlMapper urlMapper;
+
+	@Autowired
+	private ObjectMapper mapper;
 	@Value("${wee.base.url}")
 	String weeBaseUrl;
 
@@ -42,9 +50,19 @@ public class UrlServiceImpl implements UrlService{
 	 * @see com.wee.service.UrlService#findByHash()
 	 */
 	@Override
-	@Cacheable(value = "linkCache")
 	public Optional<Url> findByHash(String hash) {
-		return urlRepo.findById(hash);
+		String redisKey = Constants.REDIS_HASH_KEY + hash;
+		if(RedisUtils.exists(redisKey)){
+			Url url = getHashFromRedis(redisKey);
+			if(url != null){
+				return Optional.of(url);
+			}
+		}
+		Optional<Url> url = urlRepo.findById(hash);
+		if(url.isPresent()){
+			setRedisData(redisKey, url.get());
+		}
+		return url;
 	}
 
 	/* (non-Javadoc)
@@ -101,4 +119,24 @@ public class UrlServiceImpl implements UrlService{
 		return false;
 	}
 
+	private Url getHashFromRedis(String redisKey){
+		String redisValue = RedisUtils.get(redisKey);
+		Url url = null;
+		try{
+			url = mapper.readValue(redisValue, Url.class);
+		} catch (Exception e){
+			logger.error("Failed to get data from redis  : {}", e);
+		}
+		return url;
+	}
+
+	private void setRedisData(String redisKey, Url url){
+		try {
+			RedisUtils.set(redisKey, mapper.writeValueAsString(url));
+			RedisUtils.exists(redisKey, Long.valueOf(Duration.ofHours(24).toSeconds()).intValue());
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+
+	}
 }

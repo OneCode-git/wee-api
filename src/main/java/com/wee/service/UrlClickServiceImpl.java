@@ -5,14 +5,17 @@ package com.wee.service;
 
 import com.blueconic.browscap.Capabilities;
 import com.blueconic.browscap.ParseException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wee.entity.UrlClick;
 import com.wee.mybatis.mapper.UrlMapper;
 import com.wee.repo.UrlClickRepo;
 import com.wee.util.Commons;
+import com.wee.util.Constants;
 import eu.bitwalker.useragentutils.Browser;
 import eu.bitwalker.useragentutils.OperatingSystem;
 import eu.bitwalker.useragentutils.UserAgent;
 import eu.bitwalker.useragentutils.Version;
+import in.zet.commons.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +44,9 @@ public class UrlClickServiceImpl implements UrlClickService{
 	
 	@Autowired
 	UrlMapper urlMapper;
+
+	@Autowired
+	private ObjectMapper mapper;
 	
 	/* (non-Javadoc)
 	 * @see com.wee.service.UrlClickService#save(com.wee.entity.UrlClick)
@@ -80,8 +86,9 @@ public class UrlClickServiceImpl implements UrlClickService{
 			urlClick.setBrowserMajorversion(userAgentDerivatives.get(1));
 			urlClick.setDeviceType(userAgentDerivatives.get(2));
 
-
-			urlMapper.saveInUrlClick(urlClick);
+			String redisKey = Constants.REDIS_URL_CLICK + urlId + "_" + new Timestamp(System.currentTimeMillis());
+			RedisUtils.set(redisKey, mapper.writeValueAsString((urlClick)));
+//			urlMapper.saveInUrlClick(urlClick);
 
 		} catch (Exception e) {
 			logger.error("unable to save urlClick ", e);
