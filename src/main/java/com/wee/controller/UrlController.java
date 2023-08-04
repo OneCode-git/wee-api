@@ -66,7 +66,7 @@ public class UrlController {
 				Url = weeBaseUrl+ "c/" + hash;
 			}
 			else
-				Url = weeBaseUrl+hash;
+				Url = weeBaseUrl+ "c/" + hash;
 			metaData.put("Url",Url);
 			eventsLogHelper.addAgentEvent(metaData);
 		}

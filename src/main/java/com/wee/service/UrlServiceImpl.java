@@ -74,7 +74,7 @@ public class UrlServiceImpl implements UrlService{
 		if (url.getGenClickId() != null && url.getGenClickId() == true) {
 			return weeBaseUrl+ "c/" + hash;
 		}
-		return weeBaseUrl+hash;
+		return weeBaseUrl+ "c/" + hash;
 	}
 
 	String convertIntoJsonString(String metaData){
