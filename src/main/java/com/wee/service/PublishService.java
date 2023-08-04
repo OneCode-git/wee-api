@@ -18,7 +18,6 @@ import software.amazon.awssdk.services.sns.model.SnsException;
 public class PublishService {
     @Autowired
      Environment environment;
-
      SnsClient snsClient;
     static String EVENT_ARN = "aws_sns_event_arn";
     

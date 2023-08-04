@@ -40,7 +40,62 @@ public class Url extends BaseEntity implements Serializable{
 	
 	@Column(name="expires_on")
 	Timestamp expiresOn;
-	
+
+	@Column(name="metadata")
+	String metadata;
+
 	@Transient
 	Boolean genClickId;
+
+	public String getHash() {
+		return hash;
+	}
+
+	public void setHash(String hash) {
+		this.hash = hash;
+	}
+
+	public String getOriginalUrl() {
+		return originalUrl;
+	}
+
+	public void setOriginalUrl(String originalUrl) {
+		this.originalUrl = originalUrl;
+	}
+
+	public Timestamp getCreatedTs() {
+		return createdTs;
+	}
+
+	public void setCreatedTs(Timestamp createdTs) {
+		this.createdTs = createdTs;
+	}
+
+	public Timestamp getExpiresOn() {
+		return expiresOn;
+	}
+
+	public void setExpiresOn(Timestamp expiresOn) {
+		this.expiresOn = expiresOn;
+	}
+
+	public Boolean getGenClickId() {
+		return genClickId;
+	}
+
+	public void setGenClickId(Boolean genClickId) {
+		this.genClickId = genClickId;
+	}
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	public String getMetadata() {
+		return metadata;
+	}
+	public void setMetadata(String metadata) {
+		this.metadata = metadata;
+	}
+
 }

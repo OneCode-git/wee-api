@@ -26,6 +26,12 @@ public class EventsLogHelper {
     public void addAgentEvent(JSONObject metaData){
         HashMap<String,String> attributes = new HashMap<>();
         attributes.put("userId", String.valueOf(metaData.get("userId")));
+        if(Objects.nonNull(metaData.get("partnerId"))) {
+            attributes.put("partnerId", String.valueOf(metaData.get("partnerId")));
+        }
+        else{
+            attributes.put("partnerId", null);
+        }
         attributes.put("type",metaData.getString("type"));
         attributes.put("referenceId", String.valueOf(metaData.get("referenceId")));
         attributes.put("Browser", String.valueOf(metaData.get("Browser")));

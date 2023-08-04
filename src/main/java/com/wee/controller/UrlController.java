@@ -68,9 +68,9 @@ public class UrlController {
 			else
 				Url = weeBaseUrl+hash;
 			metaData.put("Url",Url);
-//			eventsLogHelper.addAgentEvent(metaData);
-			urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
+			eventsLogHelper.addAgentEvent(metaData);
 		}
+		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
 		oUrl.ifPresent(url->{
 					httpServletResponse.setHeader("Location", url.getOriginalUrl());
 		    httpServletResponse.setStatus(302);
