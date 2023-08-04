@@ -139,4 +139,8 @@ public class UrlServiceImpl implements UrlService{
 		}
 
 	}
+
+	public void updateUrlClickDb(){
+//		RedisUtils.get
+	}
 }
