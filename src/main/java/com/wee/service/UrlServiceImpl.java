@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -41,6 +42,7 @@ public class UrlServiceImpl implements UrlService{
 	 * @see com.wee.service.UrlService#findByHash()
 	 */
 	@Override
+	@Cacheable(value = "linkCache")
 	public Optional<Url> findByHash(String hash) {
 		return urlRepo.findById(hash);
 	}

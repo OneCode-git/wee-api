@@ -75,7 +75,6 @@ public class UrlClickServiceImpl implements UrlClickService{
 			urlClick = new UrlClick(capabilities);
 			urlClick.setUrlId(urlId);
 			urlClick.setCreatedTs(new Timestamp(new Date().getTime()));
-			urlClick.setId(UUID.randomUUID());
 			urlClick.setUserIp(ipData);
 			urlClick.setBrowser(userAgentDerivatives.get(0));
 			urlClick.setBrowserMajorversion(userAgentDerivatives.get(1));
@@ -84,7 +83,7 @@ public class UrlClickServiceImpl implements UrlClickService{
 
 			urlMapper.saveInUrlClick(urlClick);
 
-		} catch (IOException | ParseException e) {
+		} catch (Exception e) {
 			logger.error("unable to save urlClick ", e);
 			logger.info("LeaderBoard Controller Exception" + e.getMessage());
 		}
