@@ -43,10 +43,10 @@ public class Url extends BaseEntity implements Serializable{
 
 	@Column(name="metadata")
 	String metadata;
-	
+
 	@Transient
 	Boolean genClickId;
-	
+
 	public String getHash() {
 		return hash;
 	}

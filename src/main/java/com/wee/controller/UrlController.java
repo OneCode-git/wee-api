@@ -9,6 +9,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.wee.entity.EventsLogHelper;
+import com.wee.service.UrlClickService;
+import com.wee.service.UrlServiceImpl;
 import in.zet.commons.utils.RedisUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +29,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import eu.bitwalker.useragentutils.UserAgent;
 import com.wee.entity.Url;
-import com.wee.service.UrlClickService;
 import com.wee.service.UrlService;
 import com.wee.util.Commons;
 
@@ -42,10 +43,14 @@ public class UrlController {
 	@Autowired UrlService urlService;
 	@Autowired
 	EventsLogHelper eventsLogHelper;
-	@Autowired UrlClickService urlClickService;
+	@Autowired
+	private UrlClickService urlClickService;
 
 	@Value("${wee.base.url}")
 	String weeBaseUrl;
+
+	@Autowired
+	private UrlServiceImpl urlServiceImpl;
 		
 	@GetMapping("{hash}")
 	void redirect(@PathVariable("hash") String hash,HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
@@ -65,7 +70,7 @@ public class UrlController {
 				Url = weeBaseUrl+ "c/" + hash;
 			}
 			else
-				Url = weeBaseUrl+hash;
+				Url = weeBaseUrl+ "c/" + hash;
 			metaData.put("Url",Url);
 			eventsLogHelper.addAgentEvent(metaData);
 		}
@@ -118,12 +123,9 @@ public class UrlController {
 		return new ResponseEntity<String>("invalid URL or meta data", HttpStatus.BAD_REQUEST);
 	}
 
-	@PostMapping(path= "redis", consumes = "application/json", produces = "text/plain")
-	ResponseEntity<Object> redis(@RequestBody HashMap<String, String> request) throws JsonProcessingException {
-		LOGGER.info("Create request recieved for url:  "+request);
-		RedisUtils.set(request.get("key"), request.get("value"), 13);
-//		request.get("key");
-		return  ResponseEntity.ok().build();
+	@GetMapping("/updateUrlClickDb")
+	void updateUrlClickDb() {
+		urlServiceImpl.updateUrlClickDb();
 	}
 	
 }
