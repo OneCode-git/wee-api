@@ -35,7 +35,7 @@
 	<insert id="saveInUrlClickBulk">
 
 		insert into url_click
-		(id,
+		(
 		url_id,
 		browser,
 		browser_type,
@@ -49,16 +49,15 @@
 		values
 		<foreach collection="urlClickList" item="item" separator="," >
 		(
-		#{item.id},
-		#{item.url_id},
+		#{item.urlId},
 		#{item.browser},
-		#{item.browser_type},
-		#{item.browser_major_version},
-		#{item.device_type},
+		#{item.browserType},
+		#{item.browserMajorversion},
+		#{item.deviceType},
 		#{item.platform},
-		#{item.platform_version},
-		#{item.created_ts},
-		#{item.user_ip}
+		#{item.platformVersion},
+		#{item.createdTs},
+		#{item.userIp}
 		)
 		</foreach>
 	</insert>
