@@ -8,6 +8,7 @@ on:
 env:
   AWS_Region: ap-south-1
 
+
 jobs:
   compile-test-build:
     if: github.event.pull_request.merged == true
@@ -49,7 +50,7 @@ jobs:
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
       with:
-         gradle-version: 6.0.1
+         gradle-version: 8.1.1
          
    
     - name: Execute Gradle wrapper
