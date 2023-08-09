@@ -73,8 +73,9 @@ public class UrlController {
 				Url = weeBaseUrl+ "c/" + hash;
 			metaData.put("Url",Url);
 			eventsLogHelper.addAgentEvent(metaData);
+			urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
 		}
-		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
+
 		oUrl.ifPresent(url->{
 					httpServletResponse.setHeader("Location", url.getOriginalUrl());
 		    httpServletResponse.setStatus(302);
@@ -123,9 +124,16 @@ public class UrlController {
 		return new ResponseEntity<String>("invalid URL or meta data", HttpStatus.BAD_REQUEST);
 	}
 
-	@GetMapping("/updateUrlClickDb")
+	@PostMapping("/updateUrlClickDb")
 	void updateUrlClickDb() {
-		urlServiceImpl.updateUrlClickDb();
+		LOGGER.info("Request came form cron");
+		try {
+			urlServiceImpl.updateUrlClickDb();
+		}
+		catch(Exception e){
+			LOGGER.error("Request failed",e);
+		}
+
 	}
 	
 }

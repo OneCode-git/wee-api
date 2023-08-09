@@ -73,7 +73,7 @@ public class UrlClickServiceImpl implements UrlClickService{
 		return urlClick;
 	}
 	
-	@Async
+
 	public void saveInUrlClick(String userAgent, String urlId, String ipData, List<String> userAgentDerivatives) {
 		UrlClick urlClick = null;
 		try {

@@ -4,7 +4,6 @@
 package com.wee.service;
 
 import java.sql.Timestamp;
-import java.time.Duration;
 import java.util.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -12,13 +11,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wee.entity.UrlClick;
 import com.wee.util.Constants;
 import in.zet.commons.utils.RedisUtils;
-import netscape.javascript.JSObject;
+import lombok.RequiredArgsConstructor;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -26,20 +24,19 @@ import com.wee.entity.Url;
 import com.wee.mybatis.mapper.UrlMapper;
 import com.wee.repo.UrlRepo;
 import com.wee.util.Commons;
-import java.sql.Timestamp;
-import java.util.Date;
 
 /**
  * @author chaitu
  *
  */
 @Service
+@RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService{
 	private static final Logger logger = LoggerFactory.getLogger(UrlClickServiceImpl.class);
 	@Autowired
 	UrlRepo urlRepo;
-	@Autowired UrlMapper urlMapper;
 
+	private final UrlMapper urlMapper;
 	@Autowired
 	private ObjectMapper mapper;
 	@Value("${wee.base.url}")
@@ -132,7 +129,6 @@ public class UrlServiceImpl implements UrlService{
 	private void setRedisData(String redisKey, Url url){
 		try {
 			RedisUtils.set(redisKey, mapper.writeValueAsString(url));
-			RedisUtils.exists(redisKey, Long.valueOf(Duration.ofHours(24).toSeconds()).intValue());
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}
@@ -152,6 +148,7 @@ public class UrlServiceImpl implements UrlService{
 			}
 			urlClickList.add(urlClick);
 		}
+		logger.info("Url click list for update",urlClickList);
 		urlMapper.saveInUrlClickBulk(urlClickList);
 		keyList.stream().forEach(RedisUtils::del);
 	}
