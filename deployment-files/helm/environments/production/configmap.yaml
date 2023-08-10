@@ -1,4 +1,4 @@
-ACTIVE_PROFILE: production
+ACTIVE_PROFILE: prod
 SECRETMANAGER_CONFIG: "aws-secretsmanager:/production/wee-api"
 ACTIVE_PROFILE: production
 BASE_URL: https://wee.bnking.in/
