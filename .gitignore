@@ -45,7 +45,6 @@ Icon
 .gradle/
 build/
 
-
 ### Eclipse ###
 *.pydevproject
 .project
@@ -85,6 +84,4 @@ local.properties
 
 ### Maven ###
 target/
-
 /bin
-
