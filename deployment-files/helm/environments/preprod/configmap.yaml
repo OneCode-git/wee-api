@@ -1,5 +1,6 @@
 ACTIVE_PROFILE: preprod
 SECRETMANAGER_CONFIG: "aws-secretsmanager:/preprod/wee-api"
+ACTIVE_PROFILE: preprod
 BASE_URL: https://wee.preprod.bnking.in/
 GRADLE_HOME: /usr/local/gradle
 M2: /usr/local/apache-maven/bin
