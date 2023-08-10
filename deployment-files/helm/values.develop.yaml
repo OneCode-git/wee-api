@@ -18,3 +18,4 @@ LBname: develop-eks-lbingress
 image:
   name: 887417737466.dkr.ecr.ap-south-1.amazonaws.com/wee-api-develop
   tag: latest
+  
