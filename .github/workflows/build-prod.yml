@@ -1,9 +1,9 @@
-on:
-  pull_request_target:
-    types:
-      - closed
-    branches:
-      - 'master1'
+# on:
+#   pull_request_target:
+#     types:
+#       - closed
+#     branches:
+#       - 'master1'
     
 env:
   AWS_Region: ap-south-1
