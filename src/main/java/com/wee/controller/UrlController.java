@@ -60,7 +60,7 @@ public class UrlController {
 		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
 		List<String> userAgentDerivatives = urlClickService.getValuesFromUserAgent(userAgent);
 		if(oUrl.isPresent()){
-			JSONObject metaData = new JSONObject(oUrl.get().getMetadata());
+			JSONObject metaData = Objects.isNull(oUrl.get().getMetadata()) ? new JSONObject() : new JSONObject(oUrl.get().getMetadata());
 			metaData.put("Browser",userAgentDerivatives.get(0));
 			metaData.put("BrowserMajorVersion",userAgentDerivatives.get(1));
 			metaData.put("DeviceType",userAgentDerivatives.get(2));

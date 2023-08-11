@@ -25,19 +25,27 @@ public class EventsLogHelper {
     static String EVENT_ARN = "aws_sns_event_arn";
     public void addAgentEvent(JSONObject metaData){
         HashMap<String,String> attributes = new HashMap<>();
-        attributes.put("userId", String.valueOf(metaData.get("userId")));
-        if(Objects.nonNull(metaData.get("partnerId"))) {
+        if(metaData.has("userId")) {
+            attributes.put("userId", String.valueOf(metaData.get("userId")));
+        }
+        if(metaData.has("partnerId")) {
             attributes.put("partnerId", String.valueOf(metaData.get("partnerId")));
         }
         else{
             attributes.put("partnerId", null);
         }
-        attributes.put("type",metaData.getString("type"));
-        attributes.put("referenceId", String.valueOf(metaData.get("referenceId")));
+        if(metaData.has("type")){
+            attributes.put("type",metaData.getString("type"));
+        }
+        if(metaData.has("referenceId")) {
+            attributes.put("referenceId", String.valueOf(metaData.get("referenceId")));
+        }
+        if(metaData.has("Url")) {
+            attributes.put("Url", String.valueOf(metaData.get("Url")));
+        }
         attributes.put("Browser", String.valueOf(metaData.get("Browser")));
         attributes.put("BrowserMajorVersion", String.valueOf(metaData.get("BrowserMajorVersion")));
         attributes.put("DeviceType", String.valueOf(metaData.get("DeviceType")));
-        attributes.put("Url", String.valueOf(metaData.get("Url")));
         attributes.put("ipAddress", String.valueOf(metaData.get("ipAddress")));
         try {
             generateEventPayload(attributes);
