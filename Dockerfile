@@ -1,4 +1,4 @@
-FROM --platform=$BUILDPLATFORM alpine:3.8 as downloader
+FROM --platform=$BUILDPLATFORM alpine:latest as downloader
 RUN apk update && \
     apk add unzip && \
     apk add curl && \
@@ -6,7 +6,7 @@ RUN apk update && \
     unzip -q newrelic-java.zip
     
 
-FROM --platform=$BUILDPLATFORM  arm64v8/amazoncorretto:11.0.18
+FROM --platform=$BUILDPLATFORM  arm64v8/amazoncorretto:11.0.20-alpine
 WORKDIR /app
 COPY --from=downloader newrelic/newrelic.jar /var/
 COPY build/libs/wee-api-0.0.1-SNAPSHOT.jar /app
