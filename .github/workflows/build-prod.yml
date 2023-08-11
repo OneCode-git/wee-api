@@ -4,6 +4,7 @@ on:
       - closed
     branches:
       - 'master'
+  workflow_dispatch:
     
 env:
   AWS_Region: ap-south-1
@@ -11,7 +12,7 @@ env:
 
 jobs:
   deploy:
-    if: github.event.pull_request.merged == true
+#     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     timeout-minutes: 15
     
