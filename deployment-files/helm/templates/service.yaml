@@ -5,6 +5,10 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     access: "{{ .Values.appName }}-service"
+    appname: {{ .Values.appName  }}
+  annotations:
+    alb.ingress.kubernetes.io/healthcheck-path: {{ .Values.healthPath }}
+
 spec:
   type: NodePort
   ports:
@@ -14,4 +18,4 @@ spec:
     targetPort: {{ .Values.targetport }}
   selector:
     access: {{ .Values.appName }}
-
+    appname: {{ .Values.appName  }}

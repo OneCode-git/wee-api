@@ -5,17 +5,18 @@ metadata:
   namespace: {{ .Values.namespace }}
   labels:
     access: {{ .Values.appName  }}
+    appname: {{ .Values.appName  }}
 spec:
-  # replicas: {{ .Values.replicas }}
   revisionHistoryLimit : 0
   strategy:
     type: RollingUpdate
     rollingUpdate:
       maxSurge: 25%
-      maxUnavailable: 25%
+      maxUnavailable: 0
   selector:
     matchLabels:
       access: {{ .Values.appName  }}
+      appname: {{ .Values.appName  }}
   template:
     metadata:
       annotations:
@@ -23,25 +24,25 @@ spec:
         checksum/configmap1: {{ printf "environments/%s/configmap.yaml" .Values.global.env | .Files.Get | sha256sum }}
       labels:
         access: {{ .Values.appName  }}
+        appname: {{ .Values.appName  }}
     spec:
+      terminationGracePeriodSeconds: 30
       containers:
       - name: "{{ .Values.appName  }}-{{ .Values.global.env  }}"
-        image: "{{ .Values.image.name }}:{{ .Values.image.tag  }}" 
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag  }}" 
         ports:
         - name: {{ .Values.appName  }}
           containerPort: {{ .Values.targetport }}
         readinessProbe:
             httpGet:
-              path: /actuator/health
+              path: {{ .Values.healthPath }}
               port: {{ .Values.targetport }}
             initialDelaySeconds: 30
             periodSeconds: 10
-        # livenessProbe:
-        #     httpGet:
-        #       path: /actuator/health/liveness
-        #       port: {{ .Values.targetport }}
-        #     initialDelaySeconds: 60
-        #     periodSeconds: 10
+        lifecycle:
+           preStop:
+              exec:
+                 command: ["sleep","10"]
         envFrom:
             - configMapRef:
                 name:  "{{ .Values.appName }}-{{ .Values.global.env  }}-configmap"
@@ -49,9 +50,9 @@ spec:
                 name:  "{{ .Values.appName }}-{{ .Values.global.env  }}-secret"
         resources:
           requests:
-            cpu: 1
-            memory: "1Gi"
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
           limits:
-            cpu: 2
-            memory: "1.5Gi"
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}
         imagePullPolicy: Always

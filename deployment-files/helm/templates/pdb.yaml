@@ -1,0 +1,11 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Values.appName  }}
+  namespace: {{ .Values.namespace }}
+spec:
+  minAvailable: {{ .Values.minReplicas  }}
+  selector:
+    matchLabels:
+       access: {{ .Values.appName  }}
+       appname: {{ .Values.appName  }}
