@@ -25,8 +25,8 @@ acm: arn:aws:acm:ap-south-1:887417737466:certificate/66ba8269-6c84-4702-8bf3-e2d
 
 resources:
   requests:
-    cpu: "200m"
+    cpu: "500m"
     memory: "1Gi"
   limits:
-    cpu: "200m"
+    cpu: "500m"
     memory: "1Gi"
