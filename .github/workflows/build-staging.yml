@@ -1,44 +1,59 @@
+name: Staging Branch
 on:
   pull_request_target:
     types:
       - closed
     branches:
       - 'staging'
-    
+  workflow_dispatch:
+   inputs:
+     choice:
+       type: choice
+       description: Make a choice
+       required: true
+       default: restart
+       options:
+       - deploy
+       - restart
+       
 env:
-  AWS_Region: ap-south-1
 
+  AWS_Account: 887417737466
+  Region: ap-south-1
+  ClusterName: Staging-EKS-Onecode
+  Env: staging
+  NameSpace: staging
+  ValuesFile: values.staging.yaml
+  SONAR_HOST_URL: https://sonar-eks.staging.onecode.in
+  SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_STAGING }}
+  SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_STAGING }}
+  SLACK_CHANNEL: '#gitactions-staging'
+  ECR_REGISTRY: 887417737466.dkr.ecr.ap-south-1.amazonaws.com
+  ECR_REPOSITORY: wee-api-staging
+  AppName: wee-api
 
+ 
 jobs:
-  compile-test-build:
-    if: github.event.pull_request.merged == true
+  Build-Deploy-Service:
+    if: ( github.event_name == 'workflow_dispatch' && github.event.inputs.choice  == 'deploy' ) || ( github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.merged == true )
     runs-on: ubuntu-latest
     timeout-minutes: 15
-    
-    steps:
-    - name: Sets env vars for Staging
-      run: |
-          echo "Container_Registry_NAME=887417737466.dkr.ecr.ap-south-1.amazonaws.com/wee-api-staging" >> $GITHUB_ENV
-          echo "AWS_Account=887417737466" >> $GITHUB_ENV
-          echo "Region=ap-south-1"  >> $GITHUB_ENV
-          echo "ClusterName=Staging-EKS-Onecode" >> $GITHUB_ENV
-          echo "NameSpace=staging" >> $GITHUB_ENV
-          echo "ValuesFile=values.staging.yaml" >> $GITHUB_ENV
-          echo "AppName=wee-api" >> $GITHUB_ENV
-          echo "SONAR_HOST_URL=https://sonar-eks.staging.onecode.in" >> $GITHUB_ENV
 
+    permissions:
+      id-token: write
+      contents: read
+      
+    steps:
+    - name: Configure AWS credentials 
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: arn:aws:iam::887417737466:role/github-actions-role
+        role-session-name: githubactions
+        aws-region: ${{ env.Region }} 
+ 
            
-         
-    -   name: Configure AWS Credentials for Staging
-        uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: "${{ env.Region }}"
-           
-    - name: Checkout
+    - name: Checkout Git Repository code
       uses: actions/checkout@v3
-    
       
     - name: Set up Java env
       uses: actions/setup-java@v3
@@ -50,25 +65,26 @@ jobs:
     - name: Setup Gradle
       uses: gradle/gradle-build-action@v2
       with:
-         gradle-version: 8.1.1
-         
-   
+        gradle-version: 8.1.1
+
     - name: Execute Gradle wrapper
       run: gradle wrapper
       
     - name: Execute Gradle build
-      run:  ./gradlew build
-        
-    - name: SonarQube Scan
+      run:  ./gradlew build -x test
+  
+    - name: SonarQube Scanning
       uses: sonarsource/sonarqube-scan-action@master
       env:
            SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
-           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_STAGING }}
+           SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
+      with:
+          projectBaseDir: ./  
       
-    - name: Login to Docker Hub
+    - name: Login to ECR
       uses: docker/login-action@v2
       with:
-        registry: ${{ env.Container_Registry_NAME }}
+        registry: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}   
           
     - name: Set up QEMU
       uses: docker/setup-qemu-action@v2
@@ -77,39 +93,212 @@ jobs:
       id: buildx
       uses: docker/setup-buildx-action@v2
       
-    - name: Build and push
+    - name: Getting Docker tag from github SHA value
+      run: echo "IMAGE_TAG=`echo ${{ github.sha }}| cut -c1-8`" >> $GITHUB_ENV
+      
+    - name: Deleting old docker imager on manual deploy action
+      if: github.event_name == 'workflow_dispatch' && github.event.inputs.choice  == 'deploy'
+      run: |
+         OLD_COMMIT_ID=$(aws ecr describe-images --repository-name ${{ env.ECR_REPOSITORY }} --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text)
+         echo "$OLD_COMMIT_ID"
+         if [[ "$OLD_COMMIT_ID" == ${{ env.IMAGE_TAG }} ]]; then
+               aws ecr batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --image-ids imageTag=${{ env.IMAGE_TAG }}
+               echo "Deleting docker image"
+         else
+               echo "Its New Deployment... Proceeding with next step"
+         fi
+      
+    - name: Docker Images Build and push to ECR
       id: docker_build
       uses: docker/build-push-action@v3
       with:
         context: ./
-          # Dockerfile file location
+#           # Dockerfile file location
         file: ./Dockerfile
-          # Supported image architectures, since I need an aarch64 image, so I added arm64 here
+#           # Supported image architectures, since I need an aarch64 image, so I added arm64 here
         platforms: linux/arm64
         push: true
-        tags: ${{ env.Container_Registry_NAME }}:latest
-
+        tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
+        
     - name: Create kube config
       run: |
               aws eks update-kubeconfig --region "${{ env.Region }}" --name "${{ env.ClusterName }}"
-              
-      
-    - name: Helm Deploy
-      run: |
-             aws eks update-kubeconfig --region "${{ env.Region }}" --name "${{ env.ClusterName }}"
-             helm upgrade --install "${{ env.AppName }}" ./deployment-files/helm/  -f ./deployment-files/helm/"${{ env.ValuesFile }}" -n "${{ env.NameSpace }}" --set image.repository=${{ env.Container_Registry_NAME }} --set region="${{ env.Region }}" --debug 
-             
-             rm ~/.kube/config
-        
 
+    - name: Deploy on EKS
+      id: eks
+      run: |
+             helm upgrade --install "${{ env.AppName }}" ./deployment-files/helm/  -f ./deployment-files/helm/"${{ env.ValuesFile }}" -n "${{ env.NameSpace }}" --create-namespace   --set image.repository=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }} --set image.tag="${{ env.IMAGE_TAG }}" --set region="${{ env.Region }}" --debug  
+      
+    - name: Deployment Failed
+      if: failure()
+      run: |
+          echo "Kubernetes deployment Failed. Deleting Docker Image"
+          aws ecr batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --image-ids imageTag=${{ env.IMAGE_TAG }}
+          
+          # Set the GitHub Actions job as failed
+          exit 1
+          
+      
+    - name: Check Pod Deployment Status
+      id: pod-status
+      timeout-minutes: 5
+      run: |
              
+             TIMEOUT=100
+             echo "Default Timout 5 mins"
+             POD_NAME=$(kubectl get pods -n "${{ env.NameSpace }}" --sort-by='.metadata.creationTimestamp' --selector=appname="${{ env.AppName }}" | awk 'END{print $1}')
+             
+             for i in $(seq 1 $TIMEOUT); do
+
+                pod_status=$(kubectl get pod $POD_NAME -n "${{ env.NameSpace }}" -o jsonpath='{.status.phase}')
+                ready_status=$(kubectl get pod -n "${{ env.NameSpace }}" $POD_NAME -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}')
+ 
+                if [[ "$pod_status" == "Running"  &&  "$ready_status" == "True" ]]; then
+
+                  echo "::set-output name=pod_status::Running"
+                  echo "::set-output name=ready_status::True"
+                  
+                  echo -e "\e[1mPod is Running.\e[0m"
+                  kubectl get pods -n "${{ env.NameSpace }}" | grep -i "${{ env.AppName }}"
+                  break
+                fi
+                
+                i=i+1
+                echo -e "\e[1mPod Status....\e[0m"
+                kubectl get pods -n "${{ env.NameSpace }}" | grep -i "${{ env.AppName }}"
+      
+                sleep 1
+             
+             done
+             rm ~/.kube/config
+
+    - name: Deployment | Job Failed. Rolling back 
+      if: (failure() || steps.pod-status.outcome == 'Failure' || steps.pod-status.timed_out) || ( steps.pod-status.outputs.pod_status != 'Running' && steps.pod-status.outputs.ready_status != 'True') 
+      run: |
+          aws eks update-kubeconfig --region "${{ env.Region }}" --name "${{ env.ClusterName }}" 
+          POD_NAME=$(kubectl get pods -n "${{ env.NameSpace }}" --sort-by='.metadata.creationTimestamp' --selector=appname="${{ env.AppName }}" | awk 'END{print $1}')
+          echo -e "\e[1mLogs of Pod.\e[0m"
+          kubectl logs $POD_NAME -n "${{ env.NameSpace }}"
+          
+          
+          Image_tag=$(kubectl get deployment "${{ env.AppName }}" -n "${{ env.NameSpace }}" -o jsonpath='{.spec.template.spec.containers[0].image}' | cut -d ":" -f2)
+          if [[ "$Image_tag" != "${{ env.IMAGE_TAG }}" ]]; then
+              echo -e "\e[1mJob Failure Deleting Docker Image\e[0m"
+              aws ecr batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --image-ids imageTag=${{ env.IMAGE_TAG }}
+              
+          elif [[ steps.docker_build.outcome == 'Success' && steps.pod-status.outcome == 'Failure' || steps.pod-status.timed_out ]]; then
+               echo -e "\e[1m Deleting deployed Docker Image\e[0m"
+               aws ecr batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --image-ids imageTag=${{ env.IMAGE_TAG }}
+               echo -e "\e[1mPod is not in the Running state. Initiating rollback....\e[0m"
+               OLD_COMMIT_ID=$(aws ecr describe-images --repository-name ${{ env.ECR_REPOSITORY }} --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text)
+               echo "$OLD_COMMIT_ID"
+               helm upgrade --install "${{ env.AppName }}" ./deployment-files/helm/  -f ./deployment-files/helm/"${{ env.ValuesFile }}" -n "${{ env.NameSpace }}" --create-namespace   --set image.repository=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }} --set image.tag="$OLD_COMMIT_ID" --set region="${{ env.Region }}" --debug
+               #helm rollback -n "${{ env.NameSpace }}" "${{ env.AppName }}" $(helm list -n "${{ env.NameSpace }}" --filter "${{ env.AppName }}" --output json | jq '.[0].revision | tonumber - 1')
+
+          else
+             echo "Deployment not rolled back"
+          fi 
+          rm ~/.kube/config
+          
+          # Set the GitHub Actions job as failed
+          exit 1
+
     - name: Slack Notification
       uses: rtCamp/action-slack-notify@v2
       if: always()
       env:
-        SLACK_CHANNEL: '#gitactions-staging'
+        SLACK_CHANNEL: ${{ env.SLACK_CHANNEL }}
         SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
         SLACK_MESSAGE: "${{ env.AppName }} is ${{ job.status }}"
         SLACK_TITLE: 'Build Status'
-        SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_STAGING }}
+        SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
              
+             
+  Restart-Pod:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.choice  == 'restart' 
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      id-token: write
+      contents: read
+      
+    steps:
+    - name: Configure AWS credentials 
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        role-to-assume: arn:aws:iam::887417737466:role/github-actions-role
+        role-session-name: githubactions
+        aws-region: ${{ env.Region }}  
+
+    - name: Restart Pod on EKS
+      run: |
+             aws eks update-kubeconfig --region "${{ env.Region }}" --name "${{ env.ClusterName }}"
+
+             kubectl rollout restart deployment/"${{ env.AppName }}" -n "${{ env.NameSpace }}" 
+             
+             echo -e "\e[1mRestart Complete.\e[0m"
+             
+    - name: Check Pod Ready Status
+      id: pod-ready
+      timeout-minutes: 5
+      run: |
+             
+             TIMEOUT=100
+             echo "Default Timout 5 mins"
+             POD_NAME=$(kubectl get pods -n "${{ env.NameSpace }}" --sort-by='.metadata.creationTimestamp' --selector=appname="${{ env.AppName }}" | awk 'END{print $1}')
+
+             for i in $(seq 1 $TIMEOUT); do
+
+                pod_status=$(kubectl get pod $POD_NAME -n "${{ env.NameSpace }}" -o jsonpath='{.status.phase}')
+                ready_status=$(kubectl get pod -n "${{ env.NameSpace }}" $POD_NAME -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}')
+ 
+                if [[ "$pod_status" == "Running"  &&  "$ready_status" == "True" ]]; then
+
+                  echo "::set-output name=pod_restart_status::Running"
+                  echo "::set-output name=restart_ready_status::True"
+                  
+                  echo -e "\e[1mCogratulations.\e[0m"
+                  echo -e "\e[1mPod is Running\e[0m"
+                  
+                  kubectl get pods -n "${{ env.NameSpace }}" | grep -i "${{ env.AppName }}"
+                  break
+                fi
+                
+                i=i+1
+                echo -e "\e[1mPod Status....\e[0m"
+                kubectl get pods -n "${{ env.NameSpace }}" | grep -i "${{ env.AppName }}"
+
+                sleep 1
+             
+             done
+             
+             rm ~/.kube/config
+             
+
+             
+    - name: Pod Restart Failure Status
+      if: (failure() || steps.pod-ready.outcome == 'failure') || (steps.pod-ready.outputs.pod_restart_status != 'Running' && steps.pod-ready.outputs.restart_ready_status != 'True')
+      run: |
+          aws eks update-kubeconfig --region "${{ env.Region }}" --name "${{ env.ClusterName }}"
+
+          POD_NAME=$(kubectl get pods -n "${{ env.NameSpace }}" --sort-by='.metadata.creationTimestamp' --selector=appname="${{ env.AppName }}" | awk 'END{print $1}')
+          echo -e "\e[1mLogs of Pod.\e[0m"
+          kubectl logs $POD_NAME -n "${{ env.NameSpace }}"
+          
+          echo -e "\e[1mPod is not in the Running state.\e[0m"
+          echo -e "\e[1mRestart Failed.\e[0m"
+          echo -e "\e[1mKindly Deploy the Service Again ...\e[0m"
+  
+
+
+          rm ~/.kube/config
+
+    - name: Slack Notification
+      uses: rtCamp/action-slack-notify@v2
+      if: always()
+      env:
+        SLACK_CHANNEL: ${{ env.SLACK_CHANNEL }}
+        SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
+        SLACK_MESSAGE: "${{ env.AppName }} is ${{ job.status }}"
+        SLACK_TITLE: 'Restart Status'
+        SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
