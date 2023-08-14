@@ -7,7 +7,6 @@ on:
 env:
   AWS_Region: ap-south-1
 
-
 jobs:
   deploy:
 #     if: github.event.pull_request.merged == true
