@@ -2,7 +2,7 @@ global:
   env: production
   ingressclass: production
 appName: wee-api
-namespace: production
+namespace: wee
 
 serviceport: 80
 targetport: 5007
@@ -10,12 +10,12 @@ targetport: 5007
 maxReplicas: 10
 minReplicas: 1
 
-dnsname: wee.bnking.in
+dnsname: weetest.bnking.in
 subnet: subnet-06a741cebaf0f7819,subnet-06e90286ced3c92b3,subnet-026043a113ecb3b3a
 LBname: production-eks-lbingress
 
 acm: arn:aws:acm:ap-south-1:887417737466:certificate/66ba8269-6c84-4702-8bf3-e2d583b059d6
 
 image:
-  name: 887417737466.dkr.ecr.ap-south-1.amazonaws.com/wee-api-prod
+  name: 887417737466.dkr.ecr.ap-south-1.amazonaws.com/wee-api-test
   tag: latest
