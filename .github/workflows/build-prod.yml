@@ -1,9 +1,7 @@
 on:
-  pull_request_target:
-    types:
-      - closed
+  push:
     branches:
-      - 'master1'
+      - test-branch
     
 env:
   AWS_Region: ap-south-1
@@ -12,18 +10,18 @@ env:
 jobs:
 
   deploy:
-    if: github.event.pull_request.merged == true
+
     runs-on: ubuntu-latest
     timeout-minutes: 15
     
     steps:
     - name: Sets env vars for Prod
       run: |
-          echo "Container_Registry_NAME=887417737466.dkr.ecr.ap-south-1.amazonaws.com/wee-api-prod" >> $GITHUB_ENV
+          echo "Container_Registry_NAME=887417737466.dkr.ecr.ap-south-1.amazonaws.com/wee-api-test" >> $GITHUB_ENV
           echo "AWS_Account=887417737466" >> $GITHUB_ENV
           echo "Region=ap-south-1"  >> $GITHUB_ENV
           echo "ClusterName=Production-EKS-Onecode" >> $GITHUB_ENV
-          echo "NameSpace=production" >> $GITHUB_ENV
+          echo "NameSpace=wee" >> $GITHUB_ENV
           echo "ValuesFile=values.production.yaml" >> $GITHUB_ENV
           echo "AppName=wee-api" >> $GITHUB_ENV
      
