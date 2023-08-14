@@ -4,7 +4,7 @@ on:
       - closed
     branches:
       - 'preprod'
-    workflow_dispatch:
+  workflow_dispatch:
     
 env:
   AWS_Region: ap-south-1
