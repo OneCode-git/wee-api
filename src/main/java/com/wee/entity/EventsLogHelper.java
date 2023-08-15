@@ -25,7 +25,7 @@ public class EventsLogHelper {
     Environment environment;
     static String EVENT_ARN = "aws_sns_event_arn";
 
-    @Async
+    @Async("processExecutor")
     public void addAgentEvent(JSONObject metaData){
         HashMap<String,String> attributes = new HashMap<>();
         if(metaData.has("userId")) {
