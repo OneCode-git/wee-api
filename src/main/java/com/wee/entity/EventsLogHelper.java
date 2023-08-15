@@ -25,7 +25,7 @@ public class EventsLogHelper {
     Environment environment;
     static String EVENT_ARN = "aws_sns_event_arn";
 
-    @Async
+    @Async("processExecutor")
     public void addAgentEvent(JSONObject metaData){
         HashMap<String,String> attributes = new HashMap<>();
         if(metaData.has("userId")) {
@@ -46,10 +46,18 @@ public class EventsLogHelper {
         if(metaData.has("Url")) {
             attributes.put("Url", String.valueOf(metaData.get("Url")));
         }
-        attributes.put("Browser", String.valueOf(metaData.get("Browser")));
-        attributes.put("BrowserMajorVersion", String.valueOf(metaData.get("BrowserMajorVersion")));
-        attributes.put("DeviceType", String.valueOf(metaData.get("DeviceType")));
-        attributes.put("ipAddress", String.valueOf(metaData.get("ipAddress")));
+        if(metaData.has("Browser")) {
+            attributes.put("Browser", String.valueOf(metaData.get("Browser")));
+        }
+        if(metaData.has("BrowserMajorVersion")) {
+            attributes.put("BrowserMajorVersion", String.valueOf(metaData.get("BrowserMajorVersion")));
+        }
+        if(metaData.has("DeviceType")) {
+            attributes.put("DeviceType", String.valueOf(metaData.get("DeviceType")));
+        }
+        if(metaData.has("ipAddress")) {
+            attributes.put("ipAddress", String.valueOf(metaData.get("ipAddress")));
+        }
         try {
             generateEventPayload(attributes);
         } catch (JsonProcessingException e) {
