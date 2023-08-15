@@ -160,7 +160,7 @@ public class UrlServiceImpl implements UrlService{
 		keyList.stream().forEach(RedisUtils::del);
 	}
 
-	@Async("processExecutor")
+	@Async("actionExecutor")
 	public void updateEventAndSaveUrlClick(JSONObject metaData, String userAgentString, String hash, String ipAddress, List<String> userAgentDerivatives){
 		eventsLogHelper.addAgentEvent(metaData);
 		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
