@@ -31,11 +31,8 @@ public class ApiApplication {
 	public Executor actionExecutor(){
 		log.info("Preparing thread executor for actions");
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(100);
 		executor.setMaxPoolSize(100);
-		executor.setQueueCapacity(100);
 		executor.setThreadNamePrefix("actionAsyncThread-");
-		executor.setKeepAliveSeconds(20);
 		executor.initialize();
 		log.info("Thread pool executor for actions prepared");
 		return executor;
