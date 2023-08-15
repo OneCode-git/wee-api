@@ -27,11 +27,13 @@ public class ApiApplication {
 		SpringApplication.run(ApiApplication.class, args);
 	}
 
-	@Bean("processExecutor")
+	@Bean
 	public Executor actionExecutor(){
 		log.info("Preparing thread executor for actions");
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setMaxPoolSize(100);
+		executor.setCorePoolSize(100);
+		executor.setMaxPoolSize(500);
+		executor.setQueueCapacity(100);
 		executor.setThreadNamePrefix("actionAsyncThread-");
 		executor.initialize();
 		log.info("Thread pool executor for actions prepared");
