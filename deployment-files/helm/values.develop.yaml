@@ -10,7 +10,6 @@ targetport: 5007
 maxReplicas: 10
 minReplicas: 1
 
-
 dnsname: wee.dev.bnking.in
 subnet: subnet-2568bb5e,subnet-c6bbe0ae,subnet-ae8e06e2
 LBname: develop-eks-lbingress
