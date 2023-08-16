@@ -172,7 +172,7 @@ public class UrlServiceImpl implements UrlService{
 		logger.info("Async queue size : {}", executor.getQueueSize());
 		logger.info("Async active threads running tasks : {}", executor.getActiveCount());
 		logger.info("Async pending thread count : {}", executor.getPoolSize());
-		eventsLogHelper.addAgentEvent(metaData);
+//		eventsLogHelper.addAgentEvent(metaData);
 		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
 	}
 

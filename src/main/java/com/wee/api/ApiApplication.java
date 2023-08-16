@@ -14,6 +14,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.lang.management.ManagementFactory;
 import java.util.concurrent.Executor;
+import java.util.concurrent.RejectedExecutionHandler;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @SpringBootApplication
 @ComponentScan(basePackages= {"com.wee"})
@@ -34,12 +36,12 @@ public class ApiApplication {
 	public ThreadPoolTaskExecutor actionExecutor(){
 		log.info("Preparing thread executor for actions");
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-
 		executor.setCorePoolSize(5);
 		executor.setMaxPoolSize(20);
 		executor.setQueueCapacity(100);
-//		executor.setAllowCoreThreadTimeOut(true);
-//		executor.setKeepAliveSeconds(20);
+		executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
+		executor.setAllowCoreThreadTimeOut(true);
+		executor.setKeepAliveSeconds(20);
 		executor.setThreadNamePrefix("actionAsyncThread-");
 		executor.initialize();
 		log.info("Thread pool executor for actions prepared");
