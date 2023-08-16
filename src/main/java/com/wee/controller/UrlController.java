@@ -57,22 +57,25 @@ public class UrlController {
 		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
 		List<String> userAgentDerivatives = urlClickService.getValuesFromUserAgent(userAgent);
 		if(oUrl.isPresent()){
-			JSONObject metaData = Objects.isNull(oUrl.get().getMetadata()) ? new JSONObject() : new JSONObject(oUrl.get().getMetadata());
-			metaData.put("Browser",userAgentDerivatives.get(0));
-			metaData.put("BrowserMajorVersion",userAgentDerivatives.get(1));
-			metaData.put("DeviceType",userAgentDerivatives.get(2));
-			metaData.put("ipAddress",ipAddress);
-			String Url="";
-			if(oUrl.get().getGenClickId()!=null && oUrl.get().getGenClickId()){
-				Url = weeBaseUrl+ "c/" + hash;
-			}
-			else
-				Url = weeBaseUrl+ "c/" + hash;
-			metaData.put("Url",Url);
+//			JSONObject metaData = Objects.isNull(oUrl.get().getMetadata()) ? new JSONObject() : new JSONObject(oUrl.get().getMetadata());
+//			metaData.put("Browser",userAgentDerivatives.get(0));
+//			metaData.put("BrowserMajorVersion",userAgentDerivatives.get(1));
+//			metaData.put("DeviceType",userAgentDerivatives.get(2));
+//			metaData.put("ipAddress",ipAddress);
+//			String Url="";
+//			if(oUrl.get().getGenClickId()!=null && oUrl.get().getGenClickId()){
+//				Url = weeBaseUrl+ "c/" + hash;
+//			}
+//			else
+//				Url = weeBaseUrl+ "c/" + hash;
+//			metaData.put("Url",Url);
 
-			urlService.updateEventAndSaveUrlClick(metaData,userAgentString, hash, ipAddress, userAgentDerivatives);
+//			urlService.updateEventAndSaveUrlClick(metaData,userAgentString, hash, ipAddress, userAgentDerivatives);
 //			eventsLogHelper.addAgentEvent(metaData);
-//			urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
+			Date startDate = new Date();
+			urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgent);
+			Date endDate = new Date();
+			LOGGER.info("time taken to complete save url click process : " + (endDate.getTime() - startDate.getTime()));
 		}
 
 		oUrl.ifPresent(url->{
@@ -92,22 +95,25 @@ public class UrlController {
 		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
 		List<String> userAgentDerivatives = urlClickService.getValuesFromUserAgent(userAgent);
 		if(oUrl.isPresent()){
-			JSONObject metaData = Objects.isNull(oUrl.get().getMetadata()) ? new JSONObject() : new JSONObject(oUrl.get().getMetadata());
-			metaData.put("Browser",userAgentDerivatives.get(0));
-			metaData.put("BrowserMajorVersion",userAgentDerivatives.get(1));
-			metaData.put("DeviceType",userAgentDerivatives.get(2));
-			metaData.put("ipAddress",ipAddress);
-			String Url="";
-			if(oUrl.get().getGenClickId()!=null && oUrl.get().getGenClickId()){
-				Url = weeBaseUrl+ "c/" + hash;
-			}
-			else
-				Url = weeBaseUrl+ "c/" + hash;
-			metaData.put("Url",Url);
+//			JSONObject metaData = Objects.isNull(oUrl.get().getMetadata()) ? new JSONObject() : new JSONObject(oUrl.get().getMetadata());
+//			metaData.put("Browser",userAgentDerivatives.get(0));
+//			metaData.put("BrowserMajorVersion",userAgentDerivatives.get(1));
+//			metaData.put("DeviceType",userAgentDerivatives.get(2));
+//			metaData.put("ipAddress",ipAddress);
+//			String Url="";
+//			if(oUrl.get().getGenClickId()!=null && oUrl.get().getGenClickId()){
+//				Url = weeBaseUrl+ "c/" + hash;
+//			}
+//			else
+//				Url = weeBaseUrl+ "c/" + hash;
+//			metaData.put("Url",Url);
 
-			urlService.updateEventAndSaveUrlClick(metaData,userAgentString, hash, ipAddress, userAgentDerivatives);
+//			urlService.updateEventAndSaveUrlClick(metaData,userAgentString, hash, ipAddress, userAgentDerivatives);
 //			eventsLogHelper.addAgentEvent(metaData);
-//			urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
+			Date startDate = new Date();
+			urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgent );
+			Date endDate = new Date();
+			LOGGER.info("time taken to complete save url click process : " + (endDate.getTime() - startDate.getTime()));
 		}
 //		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
 		oUrl.ifPresent(url->{
