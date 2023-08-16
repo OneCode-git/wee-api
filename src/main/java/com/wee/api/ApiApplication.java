@@ -26,6 +26,7 @@ public class ApiApplication {
 
 	public static void main(String[] args) {
 		log.info("Thread count : {}", ManagementFactory.getThreadMXBean().getThreadCount());
+		log.info("Thread peak count : {}", ManagementFactory.getThreadMXBean().getPeakThreadCount());
 		SpringApplication.run(ApiApplication.class, args);
 	}
 
