@@ -27,6 +27,7 @@ public class ApiApplication {
 		SpringApplication.run(ApiApplication.class, args);
 	}
 
+
 //	@Bean
 //	public Executor actionExecutor(){
 //		log.info("Preparing thread executor for actions");
@@ -42,5 +43,6 @@ public class ApiApplication {
 //		log.info("Thread pool executor for actions prepared");
 //		return executor;
 //	}
+
 
 }
