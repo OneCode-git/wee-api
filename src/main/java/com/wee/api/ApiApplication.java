@@ -12,6 +12,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import lombok.extern.slf4j.Slf4j;
 
+import java.lang.management.ManagementFactory;
 import java.util.concurrent.Executor;
 
 @SpringBootApplication
@@ -24,11 +25,12 @@ import java.util.concurrent.Executor;
 public class ApiApplication {
 
 	public static void main(String[] args) {
+		log.info("Thread count : {}", ManagementFactory.getThreadMXBean().getThreadCount());
 		SpringApplication.run(ApiApplication.class, args);
 	}
 
 	@Bean
-	public Executor actionExecutor(){
+	public ThreadPoolTaskExecutor actionExecutor(){
 		log.info("Preparing thread executor for actions");
 		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 

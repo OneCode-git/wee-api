@@ -2,6 +2,8 @@ package com.wee.entity;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.wee.service.PublishService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
@@ -10,10 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 
 @Service
@@ -26,37 +25,38 @@ public class EventsLogHelper {
     static String EVENT_ARN = "aws_sns_event_arn";
 
     public void addAgentEvent(JSONObject metaData){
-        HashMap<String,String> attributes = new HashMap<>();
-        if(metaData.has("userId")) {
-            attributes.put("userId", String.valueOf(metaData.get("userId")));
-        }
-        if(metaData.has("partnerId")) {
-            attributes.put("partnerId", String.valueOf(metaData.get("partnerId")));
-        }
-        else{
-            attributes.put("partnerId", null);
-        }
-        if(metaData.has("type")){
-            attributes.put("type",metaData.getString("type"));
-        }
-        if(metaData.has("referenceId")) {
-            attributes.put("referenceId", String.valueOf(metaData.get("referenceId")));
-        }
-        if(metaData.has("Url")) {
-            attributes.put("Url", String.valueOf(metaData.get("Url")));
-        }
-        if(metaData.has("Browser")) {
-            attributes.put("Browser", String.valueOf(metaData.get("Browser")));
-        }
-        if(metaData.has("BrowserMajorVersion")) {
-            attributes.put("BrowserMajorVersion", String.valueOf(metaData.get("BrowserMajorVersion")));
-        }
-        if(metaData.has("DeviceType")) {
-            attributes.put("DeviceType", String.valueOf(metaData.get("DeviceType")));
-        }
-        if(metaData.has("ipAddress")) {
-            attributes.put("ipAddress", String.valueOf(metaData.get("ipAddress")));
-        }
+//        HashMap<String,String> attributes = new HashMap<>();
+//        if(metaData.has("userId")) {
+//            attributes.put("userId", String.valueOf(metaData.get("userId")));
+//        }
+//        if(metaData.has("partnerId")) {
+//            attributes.put("partnerId", String.valueOf(metaData.get("partnerId")));
+//        }
+//        else{
+//            attributes.put("partnerId", null);
+//        }
+//        if(metaData.has("type")){
+//            attributes.put("type",metaData.getString("type"));
+//        }
+//        if(metaData.has("referenceId")) {
+//            attributes.put("referenceId", String.valueOf(metaData.get("referenceId")));
+//        }
+//        if(metaData.has("Url")) {
+//            attributes.put("Url", String.valueOf(metaData.get("Url")));
+//        }
+//        if(metaData.has("Browser")) {
+//            attributes.put("Browser", String.valueOf(metaData.get("Browser")));
+//        }
+//        if(metaData.has("BrowserMajorVersion")) {
+//            attributes.put("BrowserMajorVersion", String.valueOf(metaData.get("BrowserMajorVersion")));
+//        }
+//        if(metaData.has("DeviceType")) {
+//            attributes.put("DeviceType", String.valueOf(metaData.get("DeviceType")));
+//        }
+//        if(metaData.has("ipAddress")) {
+//            attributes.put("ipAddress", String.valueOf(metaData.get("ipAddress")));
+//        }
+        Map<String, String> attributes = new Gson().fromJson(metaData.toString(), new TypeToken<HashMap<String, String>>() {}.getType());
         try {
             generateEventPayload(attributes);
         } catch (JsonProcessingException e) {
@@ -64,7 +64,7 @@ public class EventsLogHelper {
         }
     }
 
-    private void generateEventPayload(HashMap<String, String> attributes) throws JsonProcessingException {
+    private void generateEventPayload(Map<String, String> attributes) throws JsonProcessingException {
         attributes.put("distinct_id",String.valueOf(attributes.get("userId")));
         HashMap<String, Object> data = new HashMap<String, Object>();
         List<HashMap<String, Object>> actions = new ArrayList<HashMap<String,Object>>();

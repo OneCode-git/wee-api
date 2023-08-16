@@ -5,6 +5,7 @@ package com.wee.service;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,9 +18,12 @@ import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 
 import com.wee.entity.Url;
@@ -48,6 +52,10 @@ public class UrlServiceImpl implements UrlService{
 	EventsLogHelper eventsLogHelper;
 	@Autowired
 	private UrlClickService urlClickService;
+
+	@Qualifier("actionExecutor")
+	@Autowired
+	private ThreadPoolTaskExecutor executor;
 
 	/* (non-Javadoc)
 	 * @see com.wee.service.UrlService#findByHash()
@@ -162,6 +170,9 @@ public class UrlServiceImpl implements UrlService{
 
 	@Async("actionExecutor")
 	public void updateEventAndSaveUrlClick(JSONObject metaData, String userAgentString, String hash, String ipAddress, List<String> userAgentDerivatives){
+		logger.info("Async queue size : {}", executor.getQueueSize());
+		logger.info("Async active threads running tasks : {}", executor.getActiveCount());
+		logger.info("Async pending thread count : {}", executor.getPoolSize());
 		eventsLogHelper.addAgentEvent(metaData);
 		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
 	}
