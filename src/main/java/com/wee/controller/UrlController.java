@@ -49,9 +49,6 @@ public class UrlController {
 	@Value("${wee.base.url}")
 	String weeBaseUrl;
 
-	@Autowired
-	private UrlServiceImpl urlServiceImpl;
-		
 	@GetMapping("{hash}")
 	void redirect(@PathVariable("hash") String hash,HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
 		LOGGER.info("Redirect request recieved for hash:  "+hash+ " with user-Agent: "+userAgentString);
@@ -60,7 +57,7 @@ public class UrlController {
 		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
 		List<String> userAgentDerivatives = urlClickService.getValuesFromUserAgent(userAgent);
 		if(oUrl.isPresent()){
-			JSONObject metaData = new JSONObject(oUrl.get().getMetadata());
+			JSONObject metaData = Objects.isNull(oUrl.get().getMetadata()) ? new JSONObject() : new JSONObject(oUrl.get().getMetadata());
 			metaData.put("Browser",userAgentDerivatives.get(0));
 			metaData.put("BrowserMajorVersion",userAgentDerivatives.get(1));
 			metaData.put("DeviceType",userAgentDerivatives.get(2));
@@ -72,8 +69,10 @@ public class UrlController {
 			else
 				Url = weeBaseUrl+ "c/" + hash;
 			metaData.put("Url",Url);
-			eventsLogHelper.addAgentEvent(metaData);
-			urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
+
+			urlService.updateEventAndSaveUrlClick(metaData,userAgentString, hash, ipAddress, userAgentDerivatives);
+//			eventsLogHelper.addAgentEvent(metaData);
+//			urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
 		}
 
 		oUrl.ifPresent(url->{
@@ -92,7 +91,25 @@ public class UrlController {
 		String ipAddress = urlClickService.getIpAddress(request);
 		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
 		List<String> userAgentDerivatives = urlClickService.getValuesFromUserAgent(userAgent);
-		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
+		if(oUrl.isPresent()){
+			JSONObject metaData = Objects.isNull(oUrl.get().getMetadata()) ? new JSONObject() : new JSONObject(oUrl.get().getMetadata());
+			metaData.put("Browser",userAgentDerivatives.get(0));
+			metaData.put("BrowserMajorVersion",userAgentDerivatives.get(1));
+			metaData.put("DeviceType",userAgentDerivatives.get(2));
+			metaData.put("ipAddress",ipAddress);
+			String Url="";
+			if(oUrl.get().getGenClickId()!=null && oUrl.get().getGenClickId()){
+				Url = weeBaseUrl+ "c/" + hash;
+			}
+			else
+				Url = weeBaseUrl+ "c/" + hash;
+			metaData.put("Url",Url);
+
+			urlService.updateEventAndSaveUrlClick(metaData,userAgentString, hash, ipAddress, userAgentDerivatives);
+//			eventsLogHelper.addAgentEvent(metaData);
+//			urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
+		}
+//		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
 		oUrl.ifPresent(url->{
 			String templateURL = url.getOriginalUrl();
 			String finalURL = templateURL.replace("%7Bclick_id%7D", UUID.randomUUID().toString());
@@ -128,7 +145,7 @@ public class UrlController {
 	void updateUrlClickDb() {
 		LOGGER.info("Request came form cron");
 		try {
-			urlServiceImpl.updateUrlClickDb();
+			urlService.updateUrlClickDb();
 		}
 		catch(Exception e){
 			LOGGER.error("Request failed",e);

@@ -8,6 +8,7 @@ import java.util.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wee.entity.EventsLogHelper;
 import com.wee.entity.UrlClick;
 import com.wee.util.Constants;
 import in.zet.commons.utils.RedisUtils;
@@ -18,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.wee.entity.Url;
@@ -41,6 +43,11 @@ public class UrlServiceImpl implements UrlService{
 	private ObjectMapper mapper;
 	@Value("${wee.base.url}")
 	String weeBaseUrl;
+
+	@Autowired
+	EventsLogHelper eventsLogHelper;
+	@Autowired
+	private UrlClickService urlClickService;
 
 	/* (non-Javadoc)
 	 * @see com.wee.service.UrlService#findByHash()
@@ -152,4 +159,11 @@ public class UrlServiceImpl implements UrlService{
 		urlMapper.saveInUrlClickBulk(urlClickList);
 		keyList.stream().forEach(RedisUtils::del);
 	}
+
+	@Async("actionExecutor")
+	public void updateEventAndSaveUrlClick(JSONObject metaData, String userAgentString, String hash, String ipAddress, List<String> userAgentDerivatives){
+		eventsLogHelper.addAgentEvent(metaData);
+		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
+	}
+
 }
