@@ -14,6 +14,7 @@ import javax.persistence.Table;
 
 import com.blueconic.browscap.Capabilities;
 
+import eu.bitwalker.useragentutils.UserAgent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -67,6 +68,14 @@ public class UrlClick {
 		deviceType = (capabilities.getDeviceType());
 		platform = (capabilities.getPlatform());
 		platformVersion = (capabilities.getPlatformVersion());
+	}
+
+	public UrlClick(UserAgent userAgent) {
+		browser = userAgent.getBrowser().getName();
+		browserMajorversion = userAgent.getBrowserVersion().getVersion();
+		browserType = userAgent.getBrowser().getBrowserType().getName();
+		deviceType = userAgent.getOperatingSystem().getDeviceType().getName();
+		platform = userAgent.getOperatingSystem().getName();
 	}
 	
 	public UUID getId() {

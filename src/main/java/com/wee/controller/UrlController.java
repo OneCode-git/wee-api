@@ -73,7 +73,7 @@ public class UrlController {
 //			urlService.updateEventAndSaveUrlClick(metaData,userAgentString, hash, ipAddress, userAgentDerivatives);
 //			eventsLogHelper.addAgentEvent(metaData);
 			Date startDate = new Date();
-			urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
+			urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgent);
 			Date endDate = new Date();
 			LOGGER.info("time taken to complete save url click process : " + (endDate.getTime() - startDate.getTime()));
 		}
@@ -111,7 +111,7 @@ public class UrlController {
 //			urlService.updateEventAndSaveUrlClick(metaData,userAgentString, hash, ipAddress, userAgentDerivatives);
 //			eventsLogHelper.addAgentEvent(metaData);
 			Date startDate = new Date();
-			urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
+			urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgent );
 			Date endDate = new Date();
 			LOGGER.info("time taken to complete save url click process : " + (endDate.getTime() - startDate.getTime()));
 		}

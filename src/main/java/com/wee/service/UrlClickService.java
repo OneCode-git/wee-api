@@ -6,7 +6,7 @@ package com.wee.service;
 import com.wee.entity.UrlClick;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-import com.wee.mybatis.mapper.UrlMapper;
+
 import eu.bitwalker.useragentutils.UserAgent;
 
 /**
@@ -20,5 +20,5 @@ public interface UrlClickService {
 
 	String getIpAddress(HttpServletRequest request);
 
-	void saveInUrlClick(String userAgent, String Urlid, String IpData, List<String> userAgentDerivatives);
+	void saveInUrlClick(String userAgentString, String Urlid, String IpData, UserAgent userAgent);
 }
