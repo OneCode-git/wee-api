@@ -35,8 +35,8 @@ public class ApiApplication {
 		executor.setCorePoolSize(5);
 		executor.setMaxPoolSize(20);
 		executor.setQueueCapacity(100);
-		executor.setAllowCoreThreadTimeOut(true);
-		executor.setKeepAliveSeconds(20);
+//		executor.setAllowCoreThreadTimeOut(true);
+//		executor.setKeepAliveSeconds(20);
 		executor.setThreadNamePrefix("actionAsyncThread-");
 		executor.initialize();
 		log.info("Thread pool executor for actions prepared");
