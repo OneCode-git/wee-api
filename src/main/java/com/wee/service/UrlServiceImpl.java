@@ -167,7 +167,7 @@ public class UrlServiceImpl implements UrlService{
 		keyList.stream().forEach(RedisUtils::del);
 	}
 
-	@Async
+//	@Async
 	public void updateEventAndSaveUrlClick(JSONObject metaData, String userAgentString, String hash, String ipAddress, List<String> userAgentDerivatives){
 		logger.info("Async queue size : {}", executor.getQueueSize());
 		logger.info("Async active threads running tasks : {}", executor.getActiveCount());
