@@ -4,6 +4,7 @@
 package com.wee.entity;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -71,11 +72,11 @@ public class UrlClick {
 	}
 
 	public UrlClick(UserAgent userAgent) {
-		browser = userAgent.getBrowser().getName();
-		browserMajorversion = userAgent.getBrowserVersion().getVersion();
-		browserType = userAgent.getBrowser().getBrowserType().getName();
-		deviceType = userAgent.getOperatingSystem().getDeviceType().getName();
-		platform = userAgent.getOperatingSystem().getName();
+		browser = Objects.nonNull(userAgent.getBrowser()) ? userAgent.getBrowser().getName() : null;
+		browserMajorversion = Objects.nonNull(userAgent.getBrowserVersion()) ? userAgent.getBrowserVersion().getVersion() : null;
+		browserType = Objects.nonNull(userAgent.getBrowser()) ? userAgent.getBrowser().getBrowserType().getName() : null;
+		deviceType = Objects.nonNull(userAgent.getOperatingSystem()) ? userAgent.getOperatingSystem().getDeviceType().getName() : null;
+		platform = Objects.nonNull(userAgent.getOperatingSystem()) ? userAgent.getOperatingSystem().getName() : null;
 	}
 	
 	public UUID getId() {
