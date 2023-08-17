@@ -147,20 +147,25 @@ public class UrlServiceImpl implements UrlService{
 	}
 
 	public void updateUrlClickDb(){
+
 		Set<String> keyList = RedisUtils.getKeys(Constants.REDIS_URL_CLICK + "*");
 		List<UrlClick> urlClickList = new ArrayList<>();
+		int batchSize = 500;
 		for(String key : keyList){
 			String redisValue = RedisUtils.get(key);
 			UrlClick urlClick = null;
-			try {
-				urlClick = mapper.readValue(redisValue, UrlClick.class);
-			} catch (Exception e) {
-				logger.error("Failed to read data from redis  : {}", e);
+			if (urlClickList.size() <= batchSize) {
+				try {
+					urlClick = mapper.readValue(redisValue, UrlClick.class);
+					urlClickList.add(urlClick);
+				} catch (Exception e) {
+					logger.error("Failed to read data from redis  : {}", e);
+				}
 			}
-			urlClickList.add(urlClick);
 		}
-		logger.info("Url click list for update",urlClickList);
+		logger.info("Url click list for update : {}",urlClickList);
 		urlMapper.saveInUrlClickBulk(urlClickList);
+		urlClickList.clear();
 		keyList.stream().forEach(RedisUtils::del);
 	}
 
