@@ -5,6 +5,7 @@ package com.wee.service;
 
 import java.sql.Timestamp;
 import java.util.*;
+import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -26,6 +27,8 @@ import com.wee.entity.Url;
 import com.wee.mybatis.mapper.UrlMapper;
 import com.wee.repo.UrlRepo;
 import com.wee.util.Commons;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * @author chaitu
@@ -146,27 +149,35 @@ public class UrlServiceImpl implements UrlService{
 
 	}
 
-	public void updateUrlClickDb(){
-
-		Set<String> keyList = RedisUtils.getKeys(Constants.REDIS_URL_CLICK + "*");
-		List<UrlClick> urlClickList = new ArrayList<>();
-		int batchSize = 500;
-		for(String key : keyList){
-			String redisValue = RedisUtils.get(key);
-			UrlClick urlClick = null;
-			if (urlClickList.size() <= batchSize) {
-				try {
-					urlClick = mapper.readValue(redisValue, UrlClick.class);
-					urlClickList.add(urlClick);
-				} catch (Exception e) {
-					logger.error("Failed to read data from redis  : {}", e);
-				}
-			}
+	public void updateUrlClickDb() {
+		Set<String> keySet = RedisUtils.getKeys(Constants.REDIS_URL_CLICK + "*");
+		if (CollectionUtils.isEmpty(keySet)) {
+			return;
 		}
-		logger.info("Url click list for update : {}",urlClickList);
-		urlMapper.saveInUrlClickBulk(urlClickList);
-		urlClickList.clear();
-		keyList.stream().forEach(RedisUtils::del);
+
+		List<String> keyList = new ArrayList<>(keySet);
+		int startIndex = 0, batchSize = 2;
+
+		IntStream.iterate(startIndex, curr -> curr < keyList.size(), curr -> curr + batchSize)
+				.mapToObj(start -> keyList.subList(start, Math.min(keyList.size(), start + batchSize)))
+				.forEach(batch -> {
+					List<UrlClick> urlClickList = new ArrayList<>();
+					for (String key : batch) {
+						String redisValue = RedisUtils.get(key);
+						if (!StringUtils.hasText(redisValue)) {
+							continue;
+						}
+						try {
+							UrlClick urlClick = mapper.readValue(redisValue, UrlClick.class);
+							urlClickList.add(urlClick);
+						} catch (Exception e) {
+							logger.error("Failed to read data from redis", e);
+						}
+					}
+					logger.info("Url click list for update count: {}", urlClickList.size());
+					urlMapper.saveInUrlClickBulk(urlClickList);
+					batch.forEach(RedisUtils::del);
+				});
 	}
 
 //	@Async("actionExecutor")
