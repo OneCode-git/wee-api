@@ -82,16 +82,20 @@ public class UrlServiceImpl implements UrlService{
 
 	String convertIntoJsonString(String metaData){
 
+		if(Objects.nonNull(metaData) && !metaData.isEmpty()) {
+			// Replace equal sign with colon
+			String jsonString = metaData.replaceAll("=", ":");
 
-		// Replace equal sign with colon
-		String jsonString = metaData.replaceAll("=", ":");
+			// Create a JSONObject from the string
+			JSONObject jsonObject = new JSONObject(jsonString);
 
-		// Create a JSONObject from the string
-		JSONObject jsonObject = new JSONObject(jsonString);
+			// Convert the JSONObject to a JSON string
+			String newMetaData = jsonObject.toString();
+			return newMetaData;
+		}
 
-		// Convert the JSONObject to a JSON string
-		String newMetaData = jsonObject.toString();
-		return newMetaData;
+		JSONObject json = new JSONObject("Metadata is null");
+		return json.toString();
 	}
 
 	String generateTinyUrl(Url url , String metaData) {
