@@ -139,7 +139,7 @@ public class UrlController {
 		if(Commons.isValidURL(request.getOriginalUrl())) {
 			if(request.getOriginalUrl().length() > 2000)
 				return new ResponseEntity<String>("max length exceeded", HttpStatus.BAD_REQUEST);
-
+			LOGGER.info("url request in create method :  "+request);
 			String shortURL = urlService.create(request, request.getMetadata());
 			LOGGER.info("Create request received for url:  "+request+" processed successfully");
 			return new ResponseEntity<String>(shortURL, HttpStatus.CREATED);
