@@ -156,7 +156,7 @@ public class UrlServiceImpl implements UrlService{
 		}
 
 		List<String> keyList = new ArrayList<>(keySet);
-		int startIndex = 0, batchSize = 2;
+		int startIndex = 0, batchSize = 500;
 
 		IntStream.iterate(startIndex, curr -> curr < keyList.size(), curr -> curr + batchSize)
 				.mapToObj(start -> keyList.subList(start, Math.min(keyList.size(), start + batchSize)))
