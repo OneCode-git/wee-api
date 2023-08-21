@@ -91,7 +91,7 @@ public class UrlServiceImpl implements UrlService{
 		String hash = Commons.genHash(url.getOriginalUrl());
 		Timestamp created_at  = new Timestamp(System.currentTimeMillis());
 		if (isCollisionDetected(hash)){
-			generateTinyUrl(url,metaData);
+			return generateTinyUrl(url,metaData);
 		}
 		String jsonMetaData = convertIntoJsonString(metaData);
 		url.setHash(hash);
