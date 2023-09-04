@@ -51,7 +51,7 @@ public class UrlController {
 
 	@GetMapping("{hash}")
 	void redirect(@PathVariable("hash") String hash,HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
-		LOGGER.info("Redirect request recieved for hash:  "+hash+ " with user-Agent: "+userAgentString);
+		LOGGER.info("Redirected request for hash:  "+hash+ " with user-Agent: "+userAgentString+" with httprequest: "+request +" with http-response: "+httpServletResponse );
 		Optional<Url> oUrl = urlService.findByHash(hash);
 		String ipAddress = urlClickService.getIpAddress(request);
 		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
@@ -81,7 +81,7 @@ public class UrlController {
 		oUrl.ifPresent(url->{
 					httpServletResponse.setHeader("Location", url.getOriginalUrl());
 		    httpServletResponse.setStatus(302);
-		    LOGGER.info("Redirected request for hash:  "+hash+ " with user-Agent: "+userAgent);
+		    LOGGER.info("Redirected request for hash:  "+hash+ " with user-Agent: "+userAgent+" with httprequest: "+request +" with http-response: "+httpServletResponse );
 		});
 	}
 	
@@ -122,7 +122,7 @@ public class UrlController {
 			finalURL = finalURL.replace("%7Bepoch%7D", new Date().getTime()+ "");
 		    httpServletResponse.setHeader("Location", finalURL);
 		    httpServletResponse.setStatus(302);
-		    LOGGER.info("Redirected request to store clickID for hash:  "+hash+ " with user-Agent: "+userAgent);
+		    LOGGER.info("Redirected request to store clickID for hash:  "+hash+ " with user-Agent: "+userAgent + "with request:" + request + "with http-response" + httpServletResponse);
 		});
 
 	}
