@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.core.env.Environment;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -23,22 +24,39 @@ public class EventsLogHelper {
     @Autowired
     Environment environment;
     static String EVENT_ARN = "aws_sns_event_arn";
+
     public void addAgentEvent(JSONObject metaData){
         HashMap<String,String> attributes = new HashMap<>();
-        attributes.put("userId", String.valueOf(metaData.get("userId")));
-        if(Objects.nonNull(metaData.get("partnerId"))) {
+        if(metaData.has("userId")) {
+            attributes.put("userId", String.valueOf(metaData.get("userId")));
+        }
+        if(metaData.has("partnerId")) {
             attributes.put("partnerId", String.valueOf(metaData.get("partnerId")));
         }
         else{
             attributes.put("partnerId", null);
         }
-        attributes.put("type",metaData.getString("type"));
-        attributes.put("referenceId", String.valueOf(metaData.get("referenceId")));
-        attributes.put("Browser", String.valueOf(metaData.get("Browser")));
-        attributes.put("BrowserMajorVersion", String.valueOf(metaData.get("BrowserMajorVersion")));
-        attributes.put("DeviceType", String.valueOf(metaData.get("DeviceType")));
-        attributes.put("Url", String.valueOf(metaData.get("Url")));
-        attributes.put("ipAddress", String.valueOf(metaData.get("ipAddress")));
+        if(metaData.has("type")){
+            attributes.put("type",metaData.getString("type"));
+        }
+        if(metaData.has("referenceId")) {
+            attributes.put("referenceId", String.valueOf(metaData.get("referenceId")));
+        }
+        if(metaData.has("Url")) {
+            attributes.put("Url", String.valueOf(metaData.get("Url")));
+        }
+        if(metaData.has("Browser")) {
+            attributes.put("Browser", String.valueOf(metaData.get("Browser")));
+        }
+        if(metaData.has("BrowserMajorVersion")) {
+            attributes.put("BrowserMajorVersion", String.valueOf(metaData.get("BrowserMajorVersion")));
+        }
+        if(metaData.has("DeviceType")) {
+            attributes.put("DeviceType", String.valueOf(metaData.get("DeviceType")));
+        }
+        if(metaData.has("ipAddress")) {
+            attributes.put("ipAddress", String.valueOf(metaData.get("ipAddress")));
+        }
         try {
             generateEventPayload(attributes);
         } catch (JsonProcessingException e) {

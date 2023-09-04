@@ -4,6 +4,7 @@
 package com.wee.entity;
 
 import java.sql.Timestamp;
+import java.util.Objects;
 import java.util.UUID;
 
 import javax.persistence.Column;
@@ -14,6 +15,7 @@ import javax.persistence.Table;
 
 import com.blueconic.browscap.Capabilities;
 
+import eu.bitwalker.useragentutils.UserAgent;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -67,6 +69,14 @@ public class UrlClick {
 		deviceType = (capabilities.getDeviceType());
 		platform = (capabilities.getPlatform());
 		platformVersion = (capabilities.getPlatformVersion());
+	}
+
+	public UrlClick(UserAgent userAgent) {
+		browser = Objects.nonNull(userAgent.getBrowser()) ? userAgent.getBrowser().getName() : null;
+		browserMajorversion = Objects.nonNull(userAgent.getBrowserVersion()) ? userAgent.getBrowserVersion().getVersion() : null;
+		browserType = Objects.nonNull(userAgent.getBrowser()) ? userAgent.getBrowser().getBrowserType().getName() : null;
+		deviceType = Objects.nonNull(userAgent.getOperatingSystem()) ? userAgent.getOperatingSystem().getDeviceType().getName() : null;
+		platform = Objects.nonNull(userAgent.getOperatingSystem()) ? userAgent.getOperatingSystem().getName() : null;
 	}
 	
 	public UUID getId() {
