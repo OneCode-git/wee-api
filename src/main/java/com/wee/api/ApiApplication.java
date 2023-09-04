@@ -32,20 +32,22 @@ public class ApiApplication {
 		SpringApplication.run(ApiApplication.class, args);
 	}
 
-	@Bean
-	public ThreadPoolTaskExecutor actionExecutor(){
-		log.info("Preparing thread executor for actions");
-		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(5);
-		executor.setMaxPoolSize(20);
-		executor.setQueueCapacity(100);
-		executor.setRejectedExecutionHandler(new ThreadPoolExecutor.CallerRunsPolicy());
-		executor.setAllowCoreThreadTimeOut(true);
-		executor.setKeepAliveSeconds(20);
-		executor.setThreadNamePrefix("actionAsyncThread-");
-		executor.initialize();
-		log.info("Thread pool executor for actions prepared");
-		return executor;
-	}
+
+//	@Bean
+//	public Executor actionExecutor(){
+//		log.info("Preparing thread executor for actions");
+//		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+//
+//		executor.setCorePoolSize(5);
+//		executor.setMaxPoolSize(20);
+//		executor.setQueueCapacity(100);
+//		executor.setAllowCoreThreadTimeOut(true);
+//		executor.setKeepAliveSeconds(20);
+//		executor.setThreadNamePrefix("actionAsyncThread-");
+//		executor.initialize();
+//		log.info("Thread pool executor for actions prepared");
+//		return executor;
+//	}
+
 
 }

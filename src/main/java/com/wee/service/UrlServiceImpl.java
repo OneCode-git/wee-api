@@ -6,6 +6,7 @@ package com.wee.service;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -30,6 +31,8 @@ import com.wee.entity.Url;
 import com.wee.mybatis.mapper.UrlMapper;
 import com.wee.repo.UrlRepo;
 import com.wee.util.Commons;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * @author chaitu
@@ -89,16 +92,20 @@ public class UrlServiceImpl implements UrlService{
 
 	String convertIntoJsonString(String metaData){
 
+		if(Objects.nonNull(metaData) && !metaData.isEmpty()) {
+			// Replace equal sign with colon
+			String jsonString = metaData.replaceAll("=", ":");
 
-		// Replace equal sign with colon
-		String jsonString = metaData.replaceAll("=", ":");
+			// Create a JSONObject from the string
+			JSONObject jsonObject = new JSONObject(jsonString);
 
-		// Create a JSONObject from the string
-		JSONObject jsonObject = new JSONObject(jsonString);
+			// Convert the JSONObject to a JSON string
+			String newMetaData = jsonObject.toString();
+			return newMetaData;
+		}
 
-		// Convert the JSONObject to a JSON string
-		String newMetaData = jsonObject.toString();
-		return newMetaData;
+		JSONObject json = new JSONObject("Metadata is null");
+		return json.toString();
 	}
 
 	String generateTinyUrl(Url url , String metaData) {
@@ -149,31 +156,41 @@ public class UrlServiceImpl implements UrlService{
 
 	}
 
-	public void updateUrlClickDb(){
-		Set<String> keyList = RedisUtils.getKeys(Constants.REDIS_URL_CLICK + "*");
-		List<UrlClick> urlClickList = new ArrayList<>();
-		for(String key : keyList){
-			String redisValue = RedisUtils.get(key);
-			UrlClick urlClick = null;
-			try {
-				urlClick = mapper.readValue(redisValue, UrlClick.class);
-			} catch (Exception e) {
-				logger.error("Failed to read data from redis  : {}", e);
-			}
-			urlClickList.add(urlClick);
+	public void updateUrlClickDb() {
+		Set<String> keySet = RedisUtils.getKeys(Constants.REDIS_URL_CLICK + "*");
+		if (CollectionUtils.isEmpty(keySet)) {
+			return;
 		}
-		logger.info("Url click list for update",urlClickList);
-		urlMapper.saveInUrlClickBulk(urlClickList);
-		keyList.stream().forEach(RedisUtils::del);
+
+		List<String> keyList = new ArrayList<>(keySet);
+		int startIndex = 0, batchSize = 500;
+
+		IntStream.iterate(startIndex, curr -> curr < keyList.size(), curr -> curr + batchSize)
+				.mapToObj(start -> keyList.subList(start, Math.min(keyList.size(), start + batchSize)))
+				.forEach(batch -> {
+					List<UrlClick> urlClickList = new ArrayList<>();
+					for (String key : batch) {
+						String redisValue = RedisUtils.get(key);
+						if (!StringUtils.hasText(redisValue)) {
+							continue;
+						}
+						try {
+							UrlClick urlClick = mapper.readValue(redisValue, UrlClick.class);
+							urlClickList.add(urlClick);
+						} catch (Exception e) {
+							logger.error("Failed to read data from redis", e);
+						}
+					}
+					logger.info("Url click list for update count: {}", urlClickList.size());
+					urlMapper.saveInUrlClickBulk(urlClickList);
+					batch.forEach(RedisUtils::del);
+				});
 	}
 
-//	@Async
-	public void updateEventAndSaveUrlClick(JSONObject metaData, String userAgentString, String hash, String ipAddress, List<String> userAgentDerivatives){
-		logger.info("Async queue size : {}", executor.getQueueSize());
-		logger.info("Async active threads running tasks : {}", executor.getActiveCount());
-		logger.info("Async pending thread count : {}", executor.getPoolSize());
+//	@Async("actionExecutor")
+//	public void updateEventAndSaveUrlClick(JSONObject metaData, String userAgentString, String hash, String ipAddress, List<String> userAgentDerivatives){
 //		eventsLogHelper.addAgentEvent(metaData);
-		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
-	}
+//		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
+//	}
 
 }

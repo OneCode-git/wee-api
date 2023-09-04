@@ -19,7 +19,6 @@ import in.zet.commons.utils.RedisUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
@@ -72,19 +71,15 @@ public class UrlClickServiceImpl implements UrlClickService{
 		}
 		return urlClick;
 	}
-	
-	public void saveInUrlClick(String userAgent, String urlId, String ipData, List<String> userAgentDerivatives) {
+
+	public void saveInUrlClick(String userAgentString, String urlId, String ipData, UserAgent userAgent) {
 		UrlClick urlClick = null;
 		try {
-			Capabilities capabilities = Commons.parseUserAgent(userAgent);
 
-			urlClick = new UrlClick(capabilities);
+			urlClick = new UrlClick(userAgent);
 			urlClick.setUrlId(urlId);
 			urlClick.setCreatedTs(new Timestamp(new Date().getTime()));
 			urlClick.setUserIp(ipData);
-			urlClick.setBrowser(userAgentDerivatives.get(0));
-			urlClick.setBrowserMajorversion(userAgentDerivatives.get(1));
-			urlClick.setDeviceType(userAgentDerivatives.get(2));
 
 			String redisKey = Constants.REDIS_URL_CLICK + urlId + "_" + Instant.now().toEpochMilli();
 			String urlClickString = mapper.writeValueAsString((urlClick));
