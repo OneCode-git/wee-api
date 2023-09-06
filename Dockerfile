@@ -1,4 +1,5 @@
 FROM --platform=$BUILDPLATFORM alpine:latest as downloader
+RUN apk add --no-cache tzdata
 ENV TZ="Asia/Kolkata"
 
 RUN apk update && \
@@ -9,6 +10,7 @@ RUN apk update && \
     
 
 FROM --platform=$BUILDPLATFORM  arm64v8/amazoncorretto:11.0.20-alpine
+RUN apk add --no-cache tzdata
 ENV TZ="Asia/Kolkata"
 
 WORKDIR /app
