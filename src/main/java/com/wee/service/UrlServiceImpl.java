@@ -104,7 +104,7 @@ public class UrlServiceImpl implements UrlService{
 			return newMetaData;
 		}
 
-		JSONObject json = new JSONObject("Metadata is null");
+		JSONObject json = new JSONObject("{}");
 		return json.toString();
 	}
 
