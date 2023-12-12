@@ -10,7 +10,7 @@ targetport: 5007
 maxReplicas: 5
 minReplicas: 1
 
-dnsname: wee-eks.bnking.in
+dnsname: wee.qa-01.bnking.in
 subnet: subnet-2568bb5e,subnet-c6bbe0ae,subnet-ae8e06e2
 LBname: qa-01-eks-lbingress
 
@@ -20,7 +20,7 @@ image:
   repository: 887417737466.dkr.ecr.ap-south-1.amazonaws.com/wee-api-qa-01
   tag: latest
 
-acm: arn:aws:acm:ap-south-1:887417737466:certificate/66ba8269-6c84-4702-8bf3-e2d583b059d6
+acm: arn:aws:acm:ap-south-1:887417737466:certificate/e840c966-5200-4170-8953-f19302d8f191
 
 resources:
   requests:
