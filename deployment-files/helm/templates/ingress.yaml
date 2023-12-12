@@ -41,3 +41,15 @@ spec:
                 name: "{{ .Values.appName }}-service"
                 port:
                   number: {{ .Values.serviceport }}
+  {{ if .Values.secondaryIngress }}
+    - host: {{ .Values.secondaryIngress.dnsname }}
+      http:
+        paths:
+          - path: {{ .Values.secondaryIngress.path }}
+            pathType: Prefix
+            backend:
+              service:
+                name: "{{ .Values.appName }}-service"
+                port:
+                  number: {{ .Values.serviceport }}
+{{ end }} 

@@ -1,0 +1,31 @@
+global:
+  env: qa-01
+  ingressclass: staging
+appName: wee-api
+namespace: qa-01
+
+serviceport: 80
+targetport: 5007
+
+maxReplicas: 5
+minReplicas: 1
+
+dnsname: wee-eks.bnking.in
+subnet: subnet-2568bb5e,subnet-c6bbe0ae,subnet-ae8e06e2
+LBname: qa-01-eks-lbingress
+
+healthPath: /actuator/health/readiness
+
+image:
+  repository: 887417737466.dkr.ecr.ap-south-1.amazonaws.com/wee-api-qa-01
+  tag: latest
+
+acm: arn:aws:acm:ap-south-1:887417737466:certificate/66ba8269-6c84-4702-8bf3-e2d583b059d6
+
+resources:
+  requests:
+    cpu: "1.5"
+    memory: "2Gi"
+  limits:
+    cpu: "1.5"
+    memory: "2Gi"
