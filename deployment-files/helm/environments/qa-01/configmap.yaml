@@ -1,0 +1,5 @@
+  ACTIVE_PROFILE: staging
+  SECRETMANAGER_CONFIG: "aws-secretsmanager:/qa-01/wee-api"
+  BASE_URL: https://wee-eks.bnking.in/
+  SERVER_PORT: "5007"
+  _JAVA_OPTIONS: -javaagent:/var/newrelic.jar -Dnewrelic.config.app_name=wee-qa-01-eks -Dnewrelic.config.license_key=68091cd17960f5b4a1ea1ca600708bc38876NRAL -Xms256m
