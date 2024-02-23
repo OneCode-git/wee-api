@@ -11,9 +11,33 @@ spec:
     kind: Deployment
     name: {{ .Values.appName  }}
   metrics:
-  - type: Resource
-    resource:
-      name: cpu
-      target:
-        type: Utilization
-        averageUtilization: 80
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 80
+    - type: Resource
+      resource:
+        name: memory
+        target:
+          type: Utilization
+          averageUtilization: 95
+  behavior:
+    scaleUp:
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 10
+        - type: Percent
+          value: 20
+          periodSeconds: 10
+      stabilizationWindowSeconds: 120
+      selectPolicy: Max
+    scaleDown:
+      policies:
+        - type: Pods
+          value: 1
+          periodSeconds: 60
+      stabilizationWindowSeconds: 300
+      selectPolicy: Max
