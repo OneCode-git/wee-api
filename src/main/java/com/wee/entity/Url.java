@@ -3,18 +3,14 @@
  */
 package com.wee.entity;
 
-import java.io.Serializable;
-import java.sql.Timestamp;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-
+import com.wee.dto.UrlBulkDto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+import java.io.Serializable;
+import java.sql.Timestamp;
 
 /**
  * @author chaitu
@@ -98,4 +94,9 @@ public class Url extends BaseEntity implements Serializable{
 		this.metadata = metadata;
 	}
 
+	public static Url from(UrlBulkDto urlBulkDto) {
+		Url url = new Url();
+		url.setOriginalUrl(urlBulkDto.getOriginalUrl());
+		return url;
+	}
 }
