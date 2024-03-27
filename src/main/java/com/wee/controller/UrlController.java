@@ -4,6 +4,7 @@
 package com.wee.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.wee.dto.UrlBulkDto;
 import com.wee.entity.EventsLogHelper;
 import com.wee.entity.Url;
 import com.wee.service.UrlClickService;
@@ -170,37 +171,39 @@ public class UrlController {
 
 	}
 
-	@PostMapping(path= "/createBulk", consumes = "application/json", produces = "text/plain")
-	ResponseEntity<String> create(@RequestBody List<Url> request) {
+	@PostMapping(path= "/createBulk", consumes = "application/json", produces = "application/json")
+	ResponseEntity<List<UrlBulkDto>> create(@RequestBody List<UrlBulkDto> request) {
 
-		List<String> responseList = new ArrayList<>();
+		List<UrlBulkDto> responseList = new ArrayList<>();
 		HashMap<String, CompletableFuture<String>> completableFutureList = new HashMap<>();
 
-		request.forEach(longUrl -> {
-			if (Commons.isValidURL(longUrl.getOriginalUrl())) {
-				if (longUrl.getOriginalUrl().length() > 2000) {
-					responseList.add("max length exceeded");
-				} else {
-					CompletableFuture<String> shortUrlFuture = CompletableFuture.supplyAsync(
-							() -> urlService.create(longUrl, longUrl.getMetadata()), executor);
-					completableFutureList.put(longUrl.getOriginalUrl(), shortUrlFuture);
-				}
-			} else {
-				responseList.add("invalid URL or metadata");
+		for(UrlBulkDto url : request){
+			if (!Commons.isValidURL(url.getOriginalUrl()) || url.getOriginalUrl().length() > 2000) {
+				UrlBulkDto response = new UrlBulkDto();
+				response.setOriginalUrl(url.getOriginalUrl());
+				response.setErrorMessage("invalid URL or metadata");
+				responseList.add(response);
+				continue;
 			}
-		});
+
+			CompletableFuture<String> shortUrlFuture = CompletableFuture.supplyAsync(
+				() -> urlService.create(Url.from(url), null), executor);
+			completableFutureList.put(url.getOriginalUrl(), shortUrlFuture);
+		}
 
 		completableFutureList.forEach((longUrl, shortUrlFuture) -> {
 			try {
-				String shortUrl = shortUrlFuture.get();
-				responseList.add("Long URL: " + longUrl + ", Short URL: " + shortUrl);
+				UrlBulkDto response = new UrlBulkDto();
+				response.setOriginalUrl(longUrl);
+				response.setShortUrl(shortUrlFuture.get());
+				responseList.add(response);
 			} catch (Exception e) {
 				// Handle exceptions
-				responseList.add("Error processing URL: " + longUrl + ", " + e.getMessage());
+				LOGGER.error("Error processing URL: " + longUrl + ", " + e.getMessage());
 			}
 		});
 
-		return new ResponseEntity<>(responseList.toString(), HttpStatus.OK);
+		return new ResponseEntity<>(responseList, HttpStatus.OK);
 	}
 	
 }
