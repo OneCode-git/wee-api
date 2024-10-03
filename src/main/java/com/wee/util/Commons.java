@@ -81,7 +81,7 @@ public class Commons {
 	   	public static String genHash(String url) {
 	   		String md5 = getMd5(url+getAlphaNumericString(8));
 	   		String base64Md5 = Base64.getEncoder().encodeToString(md5.getBytes(StandardCharsets.UTF_8));
-	   		return base64Md5.substring(0, 8);
+	   		return base64Md5.substring(0, 9);
 	   	}
 	   
 	   	public static Capabilities parseUserAgent(String userAgent) throws IOException, ParseException {
