@@ -96,9 +96,17 @@ public class UrlController {
 		    LOGGER.info("Redirected request for hash:  "+hash+ " with user-Agent: "+userAgent);
 		});
 	}
-	
-	
+
 	@GetMapping("c/{hash}")
+	void redirectToLoadingScreen(@PathVariable("hash") String hash, HttpServletRequest request, HttpServletResponse response, @RequestHeader("User-Agent") String userAgentString) {
+		LOGGER.info("Redirection request to loading screen for hash: {}", hash);
+		String redirectionUrl = "https://develop.d1mkcl7qyojtwo.amplifyapp.com/redirection/" + hash;
+		response.setHeader("Location", redirectionUrl);
+		response.setStatus(302);
+	}
+	
+	
+	@GetMapping("r/{hash}")
 	void redirectWithClickId(@PathVariable("hash") String hash,HttpServletRequest request,HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
 		LOGGER.info("Redirect request recieved to store clickID for hash:  "+hash+ " with user-Agent: "+userAgentString);
 		Optional<Url> oUrl = urlService.findByHash(hash);
