@@ -27,6 +27,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import static com.wee.util.Constants.REDIRECTION_PATH;
+
 /**
  * @author chaitu
  *
@@ -43,6 +45,9 @@ public class UrlController {
 
 	@Value("${wee.base.url}")
 	String weeBaseUrl;
+
+	@Value("${redirection.base.url}")
+	String redirectionBaseUrl;
 
 	private Executor executor;
 
@@ -100,7 +105,7 @@ public class UrlController {
 	@GetMapping("c/{hash}")
 	void redirectToLoadingScreen(@PathVariable("hash") String hash, HttpServletRequest request, HttpServletResponse response, @RequestHeader("User-Agent") String userAgentString) {
 		LOGGER.info("Redirection request to loading screen for hash: {}", hash);
-		String redirectionUrl = "https://develop.d1mkcl7qyojtwo.amplifyapp.com/redirection/" + hash;
+		String redirectionUrl = redirectionBaseUrl + REDIRECTION_PATH + hash;
 		response.setHeader("Location", redirectionUrl);
 		response.setStatus(302);
 	}
