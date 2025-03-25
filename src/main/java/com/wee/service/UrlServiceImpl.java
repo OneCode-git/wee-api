@@ -6,6 +6,7 @@ package com.wee.service;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.IntStream;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -149,7 +150,8 @@ public class UrlServiceImpl implements UrlService{
 
 	private void setRedisData(String redisKey, Url url){
 		try {
-			RedisUtils.set(redisKey, mapper.writeValueAsString(url));
+			int seconds = (int) TimeUnit.DAYS.toSeconds(1);
+			RedisUtils.setex(redisKey, seconds, mapper.writeValueAsString(url));
 		} catch (JsonProcessingException e) {
 			throw new RuntimeException(e);
 		}

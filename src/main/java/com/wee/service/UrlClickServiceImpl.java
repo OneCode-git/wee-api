@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author chaitu
@@ -82,8 +83,8 @@ public class UrlClickServiceImpl implements UrlClickService{
 			urlClick.setUserIp(ipData);
 
 			String redisKey = Constants.REDIS_URL_CLICK + urlId + "_" + Instant.now().toEpochMilli();
-			String urlClickString = mapper.writeValueAsString((urlClick));
-			RedisUtils.set(redisKey, urlClickString);
+			int seconds = (int) TimeUnit.DAYS.toSeconds(1);
+			RedisUtils.setex(redisKey, seconds, mapper.writeValueAsString((urlClick)));
 //			urlMapper.saveInUrlClick(urlClick);
 
 		} catch (Exception e) {
