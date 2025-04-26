@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName  }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    access: {{ .Values.appName  }}
+    appname: {{ .Values.appName  }}
+spec:
+  revisionHistoryLimit: 3
+  progressDeadlineSeconds: 600
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 0
+    
+  selector:
+    matchLabels:
+      access: {{ .Values.appName  }}
+      appname: {{ .Values.appName  }}
+  template:
+    metadata:
+      annotations:
+        rollme: {{ randAlphaNum 5 | quote }}
+        checksum/configmap1: {{ printf "environments/%s/configmap.yaml" .Values.global.env | .Files.Get | sha256sum }}
+      labels:
+        access: {{ .Values.appName  }}
+        appname: {{ .Values.appName  }}
+    spec:
+      terminationGracePeriodSeconds: 60
+      restartPolicy: Always
+      dnsPolicy: ClusterFirst
+      containers:
+      - name: "{{ .Values.appName  }}-{{ .Values.global.env  }}"
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag  }}" 
+        ports:
+        - name: {{ .Values.appName  }}
+          containerPort: {{ .Values.targetport }}
+        readinessProbe:
+            httpGet:
+              path: {{ .Values.healthPath }}
+              port: {{ .Values.targetport }}
+            initialDelaySeconds: 60
+            timeoutSeconds: 30
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 24
+        lifecycle:
+            preStop:
+              exec:
+                command:
+                  - sleep
+                  - '20'
+        envFrom:
+            - configMapRef:
+                name:  "{{ .Values.appName }}-{{ .Values.global.env  }}-configmap"
+            - secretRef:
+                name:  "{{ .Values.appName }}-{{ .Values.global.env  }}-secret"
+        resources:
+          requests:
+            cpu: {{ .Values.resources.requests.cpu }}
+            memory: {{ .Values.resources.requests.memory }}
+          limits:
+            cpu: {{ .Values.resources.limits.cpu }}
+            memory: {{ .Values.resources.limits.memory }}
+        imagePullPolicy: Always

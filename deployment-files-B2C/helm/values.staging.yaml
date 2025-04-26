@@ -1,0 +1,29 @@
+global:
+  env: staging
+  ingressclass: staging
+appName: wee-api
+namespace: staging
+
+serviceport: 80
+targetport: 5007
+
+maxReplicas: 1
+minReplicas: 1
+
+subnet: subnet-0ac88ae5988e8e023,subnet-08b07ee584a48cc64,subnet-01ab2cb12cacf1209
+LBname: staging-magnet-ingress
+
+dnsname: link-qa.magnetapp.in
+healthPath: /actuator/health/readiness
+
+image:
+  repository: 542649758539.dkr.ecr.ap-south-1.amazonaws.com/wee-api-staging
+  tag: latest
+
+resources:
+  requests:
+    cpu: "200m"
+    memory: "500Mi"
+  limits:
+    cpu: 1
+    memory: "1Gi"

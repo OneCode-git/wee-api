@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -218,5 +219,33 @@ public class UrlController {
 
 		return new ResponseEntity<>(responseList, HttpStatus.OK);
 	}
-	
+
+	@GetMapping("s/{hash}")
+	public ResponseEntity<String> redirectView(@PathVariable("hash") String hash, HttpServletResponse response) throws IOException {
+
+		Optional<Url> urlOpt = urlService.findByHash(hash);
+
+		if (urlOpt.isPresent()) {
+			Url url = urlOpt.get();
+
+			// Generate HTML for app detection and redirection
+			String htmlContent = "<html>" +
+					"<head>" +
+					"<meta http-equiv=\"refresh\" content=\"0; url=" + url.getOriginalUrl() + "\" />" +
+					"<script>window.location.href='" + url.getOriginalUrl() + "';</script>" +
+					"</head>" +
+					"<body>" +
+					"Redirecting..." +
+					"</body>" +
+					"</html>";
+
+			// Set content type and write HTML
+			return ResponseEntity.ok()
+					.header("Content-Type", "text/html")
+					.body(htmlContent);
+		} else {
+			return ResponseEntity.internalServerError().body("Something went wrong");
+		}
+
+	}
 }
