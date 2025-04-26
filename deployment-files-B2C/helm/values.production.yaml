@@ -1,0 +1,29 @@
+global:
+  env: production
+  ingressclass: production
+appName: wee-api
+namespace: production
+serviceport: 80
+targetport: 5007
+
+maxReplicas: 5
+minReplicas: 2
+
+subnet: subnet-0db069451d8d66f4b,subnet-097669ca9f5087d65
+LBname: production-magnet-ingress
+
+
+healthPath: /actuator/health/readiness
+
+image:
+  repository: 542649758539.dkr.ecr.ap-south-1.amazonaws.com/wee-api-prod
+  tag: latest
+
+resources:
+  requests:
+    cpu: "300m"
+    memory: "500Mi"
+  limits:
+    cpu: 1
+    memory: "1Gi"
+

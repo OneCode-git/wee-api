@@ -1,0 +1,20 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations:
+    meta.helm.sh/release-namespace: monitoring
+  labels:
+    appname: "{{ .Values.appName }}-monitor"
+  name: "{{ .Values.appName }}-monitor"
+  namespace: {{ .Values.namespace }}
+spec:
+  endpoints:
+  - path: /comms-service/actuator/prometheus
+    port: http
+  namespaceSelector:
+    matchNames:
+    - {{ .Values.namespace }}
+  selector:
+    matchLabels:
+        access: "{{ .Values.appName }}-service"
+        appname: {{ .Values.appName  }}
