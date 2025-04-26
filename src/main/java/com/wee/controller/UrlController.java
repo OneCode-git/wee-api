@@ -18,6 +18,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -212,6 +213,24 @@ public class UrlController {
 		});
 
 		return new ResponseEntity<>(responseList, HttpStatus.OK);
+	}
+
+	@GetMapping("t/{hash}")
+	public RedirectView redirectView(@PathVariable("hash") String hash,HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
+		LOGGER.info("redirectView request for hash:  "+hash+ " with user-Agent: "+userAgentString+" with httprequest: "+request +" with http-response: "+httpServletResponse );
+		Optional<Url> oUrl = urlService.findByHash(hash);
+		String ipAddress = urlClickService.getIpAddress(request);
+		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
+		List<String> userAgentDerivatives = urlClickService.getValuesFromUserAgent(userAgent);
+		if(oUrl.isPresent()){
+			Date startDate = new Date();
+			urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgent);
+			Date endDate = new Date();
+			LOGGER.info("time taken to complete save url click process : " + (endDate.getTime() - startDate.getTime()));
+			return new RedirectView(oUrl.get().getOriginalUrl());
+		}
+		return new RedirectView("/not-found");
+
 	}
 	
 }
