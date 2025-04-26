@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property resource="application.properties"/>
+    <property name="PATTERN"
+              value="%d{yyyy-MM-dd'T'HH:mm:ss.SSSZ} %X{traceId:-}, %X{spanId:-} %logger{40}::%L: - %msg%n%rEx{full,separator(' | ')}"/>
+    <property name="ROLLING_FILE_PATH" value="./logs/app.%i.log.gz"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <Pattern>
+                ${PATTERN}
+            </Pattern>
+        </encoder>
+    </appender>
+
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>
+
