@@ -31,6 +31,7 @@ env:
   ECR_REPOSITORY: wee-api-staging
   AppName: wee-api
 
+
 jobs:
   Build-Deploy-Service:
     if: ( github.event_name == 'workflow_dispatch' && github.event.inputs.choice  == 'deploy' ) || ( github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.merged == true )
@@ -58,18 +59,18 @@ jobs:
         with:
           java-version: 11
           distribution: 'adopt'
+          cache: gradle
 
-      - name: Build project with Maven
-        run: mvn -B --settings settings.xml package -Dmaven.test.skip=true --file pom.xml
-        #run: mvn -B package  --file pom.xml
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
+        with:
+          gradle-version: 8.1.1
 
-      #      - name: SonarQube Scanning
-      #        uses: sonarsource/sonarqube-scan-action@master
-      #        env:
-      #          SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
-      #          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
-      #        with:
-      #          projectBaseDir: ./
+      - name: Execute Gradle wrapper
+        run: gradle wrapper
+
+      - name: Execute Gradle build
+        run:  ./gradlew build -x test
 
       - name: Login to ECR
         uses: docker/login-action@v2
