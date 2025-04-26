@@ -46,7 +46,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::887417737466:role/github-actions-role
+          role-to-assume: arn:aws:iam::542649758539:role/github-actions-role
           role-session-name: githubactions
           aws-region: ${{ env.Region }}
 
@@ -71,14 +71,6 @@ jobs:
 
       - name: Execute Gradle build
         run:  ./gradlew build -x test
-
-      - name: SonarQube Scanning
-        uses: sonarsource/sonarqube-scan-action@master
-        env:
-          SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
-          SONAR_TOKEN: ${{ env.SONAR_TOKEN }}
-        with:
-          projectBaseDir: ./
 
       - name: Login to ECR
         uses: docker/login-action@v2
@@ -115,7 +107,7 @@ jobs:
           #           # Dockerfile file location
           file: ./Dockerfile
           #           # Supported image architectures, since I need an aarch64 image, so I added arm64 here
-          platforms: linux/arm64
+
           push: true
           tags: ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
@@ -126,7 +118,7 @@ jobs:
       - name: Deploy on EKS
         id: eks
         run: |
-          helm upgrade --install "${{ env.AppName }}" ./deployment-files/helm/  -f ./deployment-files/helm/"${{ env.ValuesFile }}" -n "${{ env.NameSpace }}" --create-namespace   --set image.repository=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }} --set image.tag="${{ env.IMAGE_TAG }}" --set region="${{ env.Region }}" --debug  
+          helm upgrade --install "${{ env.AppName }}" ./deployment-files-B2C/helm/  -f ./deployment-files-B2C/helm/"${{ env.ValuesFile }}" -n "${{ env.NameSpace }}" --create-namespace   --set image.repository=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }} --set image.tag="${{ env.IMAGE_TAG }}" --set region="${{ env.Region }}" --debug  
 
       - name: Deployment Failed
         if: failure()
@@ -144,7 +136,7 @@ jobs:
         run: |
           
           TIMEOUT=100
-          echo "Default Timout 5 mins"
+          echo "Default Timeout 5 mins"
           POD_NAME=$(kubectl get pods -n "${{ env.NameSpace }}" --sort-by='.metadata.creationTimestamp' --selector=appname="${{ env.AppName }}" | awk 'END{print $1}')
           
           for i in $(seq 1 $TIMEOUT); do
@@ -191,7 +183,7 @@ jobs:
                echo -e "\e[1mPod is not in the Running state. Initiating rollback....\e[0m"
                OLD_COMMIT_ID=$(aws ecr describe-images --repository-name ${{ env.ECR_REPOSITORY }} --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text)
                echo "$OLD_COMMIT_ID"
-               helm upgrade --install "${{ env.AppName }}" ./deployment-files/helm/  -f ./deployment-files/helm/"${{ env.ValuesFile }}" -n "${{ env.NameSpace }}" --create-namespace   --set image.repository=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }} --set image.tag="$OLD_COMMIT_ID" --set region="${{ env.Region }}" --debug
+               helm upgrade --install "${{ env.AppName }}" ./deployment-files-B2C/helm/  -f ./deployment-files-B2C/helm/"${{ env.ValuesFile }}" -n "${{ env.NameSpace }}" --create-namespace   --set image.repository=${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }} --set image.tag="$OLD_COMMIT_ID" --set region="${{ env.Region }}" --debug
                #helm rollback -n "${{ env.NameSpace }}" "${{ env.AppName }}" $(helm list -n "${{ env.NameSpace }}" --filter "${{ env.AppName }}" --output json | jq '.[0].revision | tonumber - 1')
 
           else
@@ -202,15 +194,15 @@ jobs:
           # Set the GitHub Actions job as failed
           exit 1
 
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
-        if: always()
-        env:
-          SLACK_CHANNEL: ${{ env.SLACK_CHANNEL }}
-          SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
-          SLACK_MESSAGE: "${{ env.AppName }} is ${{ job.status }}"
-          SLACK_TITLE: 'Build Status'
-          SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
+  #      - name: Slack Notification
+  #        uses: rtCamp/action-slack-notify@v2
+  #        if: always()
+  #        env:
+  #          SLACK_CHANNEL: ${{ env.SLACK_CHANNEL }}
+  #          SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
+  #          SLACK_MESSAGE: "${{ env.AppName }} is ${{ job.status }}"
+  #          SLACK_TITLE: 'Build Status'
+  #          SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
 
 
   Restart-Pod:
@@ -225,7 +217,7 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
-          role-to-assume: arn:aws:iam::887417737466:role/github-actions-role
+          role-to-assume: arn:aws:iam::542649758539:role/github-actions-role
           role-session-name: githubactions
           aws-region: ${{ env.Region }}
 
@@ -243,7 +235,7 @@ jobs:
         run: |
           
           TIMEOUT=100
-          echo "Default Timout 5 mins"
+          echo "Default Timeout 5 mins"
           POD_NAME=$(kubectl get pods -n "${{ env.NameSpace }}" --sort-by='.metadata.creationTimestamp' --selector=appname="${{ env.AppName }}" | awk 'END{print $1}')
           
           for i in $(seq 1 $TIMEOUT); do
