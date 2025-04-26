@@ -18,11 +18,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
@@ -216,21 +216,31 @@ public class UrlController {
 	}
 
 	@GetMapping("t/{hash}")
-	public RedirectView redirectView(@PathVariable("hash") String hash,HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
-		LOGGER.info("redirectView request for hash:  "+hash+ " with user-Agent: "+userAgentString+" with httprequest: "+request +" with http-response: "+httpServletResponse );
-		Optional<Url> oUrl = urlService.findByHash(hash);
-		String ipAddress = urlClickService.getIpAddress(request);
-		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
-		List<String> userAgentDerivatives = urlClickService.getValuesFromUserAgent(userAgent);
-		if(oUrl.isPresent()){
-			Date startDate = new Date();
-			urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgent);
-			Date endDate = new Date();
-			LOGGER.info("time taken to complete save url click process : " + (endDate.getTime() - startDate.getTime()));
-			return new RedirectView(oUrl.get().getOriginalUrl());
+	public ResponseEntity<String> redirectView(@PathVariable("hash") String hash, HttpServletResponse response) throws IOException {
+
+		Optional<Url> urlOpt = urlService.findByHash(hash);
+
+		if (urlOpt.isPresent()) {
+			Url url = urlOpt.get();
+
+			// Generate HTML for app detection and redirection
+			String htmlContent = "<html>" +
+					"<head>" +
+					"<meta http-equiv=\"refresh\" content=\"0; url=" + url.getOriginalUrl() + "\" />" +
+					"<script>window.location.href='" + url.getOriginalUrl() + "';</script>" +
+					"</head>" +
+					"<body>" +
+					"Redirecting..." +
+					"</body>" +
+					"</html>";
+
+			// Set content type and write HTML
+			return ResponseEntity.ok()
+					.header("Content-Type", "text/html")
+					.body(htmlContent);
+		} else {
+			return ResponseEntity.internalServerError().body("Something went wrong");
 		}
-		return new RedirectView("/not-found");
 
 	}
-	
 }
