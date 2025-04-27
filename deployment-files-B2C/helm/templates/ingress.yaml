@@ -21,6 +21,7 @@ metadata:
     alb.ingress.kubernetes.io/healthy-threshold-count: '2'
     alb.ingress.kubernetes.io/unhealthy-threshold-count: '2'
     alb.ingress.kubernetes.io/group.name: {{ .Values.global.env  }}
+    alb.ingress.kubernetes.io/priority: "5"
 #Change group name as per requirement
 
 spec:
