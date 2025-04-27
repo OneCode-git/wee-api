@@ -52,6 +52,11 @@ spec:
                 command:
                   - sleep
                   - '20'
+        env:
+          - name: POD_IP
+            valueFrom:
+              fieldRef:
+                fieldPath: status.podIP
         envFrom:
             - configMapRef:
                 name:  "{{ .Values.appName }}-{{ .Values.global.env  }}-configmap"
