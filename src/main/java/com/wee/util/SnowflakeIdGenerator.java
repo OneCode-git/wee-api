@@ -1,5 +1,8 @@
 package com.wee.util;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class SnowflakeIdGenerator {
 
     private final long twepoch = 1288834974657L;
@@ -20,6 +23,7 @@ public class SnowflakeIdGenerator {
     private long lastTimestamp = -1L;
 
     public SnowflakeIdGenerator(long workerId, long datacenterId) {
+        log.info("SnowflakeIdGenerator workerId : {}, datacenterId : {}", workerId, datacenterId);
         if (workerId > maxWorkerId || workerId < 0)
             throw new IllegalArgumentException(String.format("worker Id can't be greater than %d or less than 0", maxWorkerId));
         if (datacenterId > maxDatacenterId || datacenterId < 0)

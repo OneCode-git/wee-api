@@ -22,8 +22,14 @@ import java.util.Base64;
  */
 public class Commons {
 
-    private static final SnowflakeIdGenerator snowflakeIdGenerator = new SnowflakeIdGenerator(1, 1); // or any workerId, datacenterId
+    private static final int MAX_WORKER_ID = 32;
+    private static final SnowflakeIdGenerator snowflakeIdGenerator = new SnowflakeIdGenerator(getWorkerId(), 1); // or any workerId, datacenterId
     private static final String BASE62 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    public static int getWorkerId() {
+        String podIP = System.getenv("POD_IP");
+        return Math.abs(podIP.hashCode()) % MAX_WORKER_ID;
+    }
 
     public static String genShortCode() {
         long id = snowflakeIdGenerator.nextId();
