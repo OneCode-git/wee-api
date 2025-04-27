@@ -2,4 +2,4 @@ ACTIVE_PROFILE: prod-b2c
 SECRETMANAGER_CONFIG: "aws-secretsmanager:/production/wee-api"
 AWS_REGION: ap-south-1
 PORT: "5007"
-_JAVA_OPTIONS: -javaagent:/var/newrelic.jar -Dnewrelic.config.app_name=comms-service-B2C-production-eks -Dnewrelic.config.license_key=7e496d7961ed578c800942b3fd949672fd3dNRAL -Xms512m
+_JAVA_OPTIONS: -javaagent:/var/newrelic.jar -Dnewrelic.config.app_name=wee-api-B2C-production-eks -Dnewrelic.config.license_key=7e496d7961ed578c800942b3fd949672fd3dNRAL -Xms512m
