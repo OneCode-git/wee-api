@@ -1,4 +1,4 @@
-name: Production B2C Branch
+name: Production Branch
 on:
   pull_request_target:
     types:
@@ -26,8 +26,8 @@ env:
   SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_PROD }}
   SLACK_CHANNEL: '#gitactions-prod'
   ECR_REGISTRY: 542649758539.dkr.ecr.ap-south-1.amazonaws.com
-  ECR_REPOSITORY: comms-service-prod
-  AppName: comms-service
+  ECR_REPOSITORY: wee-api-prod
+  AppName: wee-api
 
 
 jobs:
@@ -57,20 +57,20 @@ jobs:
       - name: Set up Java env
         uses: actions/setup-java@v3
         with:
-          java-version: 21
+          java-version: 11
           distribution: 'adopt'
+          cache: gradle
 
-      - name: Cache local Maven repository
-        uses: actions/cache@v4
+      - name: Setup Gradle
+        uses: gradle/gradle-build-action@v2
         with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          gradle-version: 8.1.1
 
-      - name: Build project with Maven
-        run: mvn -B --settings settings.xml package -Dmaven.test.skip=true --file pom.xml
-        #run: mvn -B package  --file pom.xml
+      - name: Execute Gradle wrapper
+        run: gradle wrapper
+
+      - name: Execute Gradle build
+        run:  ./gradlew build -x test
 
 
       - name: Login to ECR
@@ -89,17 +89,17 @@ jobs:
       - name: Getting Docker tag from github SHA value
         run: echo "IMAGE_TAG=`echo ${{ github.sha }}| cut -c1-8`" >> $GITHUB_ENV
 
-        # - name: Deleting old docker imager on manual deploy action
-        #   if: github.event_name == 'workflow_dispatch' && github.event.inputs.choice  == 'deploy'
-        #   run: |
-        #      OLD_COMMIT_ID=$(aws ecr describe-images --repository-name ${{ env.ECR_REPOSITORY }} --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text)
-        #      echo "$OLD_COMMIT_ID"
-        #      if [[ "$OLD_COMMIT_ID" == ${{ env.IMAGE_TAG }} ]]; then
-        #            aws ecr batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --image-ids imageTag=${{ env.IMAGE_TAG }}
-        #            echo "Deleting docker image"
-        #      else
-        #            echo "Its New Deployment... Proceeding with next step"
-        #      fi
+      - name: Deleting old docker imager on manual deploy action
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.choice  == 'deploy'
+        run: |
+          OLD_COMMIT_ID=$(aws ecr describe-images --repository-name ${{ env.ECR_REPOSITORY }} --query 'sort_by(imageDetails,& imagePushedAt)[-1].imageTags[0]' --output text)
+          echo "$OLD_COMMIT_ID"
+          if [[ "$OLD_COMMIT_ID" == ${{ env.IMAGE_TAG }} ]]; then
+                aws ecr batch-delete-image --repository-name ${{ env.ECR_REPOSITORY }} --image-ids imageTag=${{ env.IMAGE_TAG }}
+                echo "Deleting docker image"
+          else
+                echo "Its New Deployment... Proceeding with next step"
+          fi
 
       - name: Docker Images Build and push to ECR
         id: docker_build
