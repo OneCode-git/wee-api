@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SnowflakeIdGenerator {
 
-    private final long twepoch = 1288834974657L;
+    private final long twepoch = 930571200000L;
     private final long workerIdBits = 5L;
     private final long datacenterIdBits = 5L;
     private final long maxWorkerId = -1L ^ (-1L << workerIdBits);
