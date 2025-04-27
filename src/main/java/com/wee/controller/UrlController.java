@@ -11,6 +11,7 @@ import com.wee.service.UrlClickService;
 import com.wee.service.UrlService;
 import com.wee.util.Commons;
 import eu.bitwalker.useragentutils.UserAgent;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,6 +35,7 @@ import static com.wee.util.Constants.REDIRECTION_PATH;
  * @author chaitu
  *
  */
+@Slf4j
 @RestController
 @RequestMapping("/")
 public class UrlController {
@@ -218,6 +220,20 @@ public class UrlController {
 		});
 
 		return new ResponseEntity<>(responseList, HttpStatus.OK);
+	}
+
+	@PostMapping(path= "/v2/", consumes = "application/json", produces = "text/plain")
+	ResponseEntity<String> createV2(@RequestBody Url request) throws JsonProcessingException {
+		log.info("Create request received for url:  {}", request);
+		if(Commons.isValidURL(request.getOriginalUrl())) {
+			if(request.getOriginalUrl().length() > 2000)
+				return new ResponseEntity<String>("max length exceeded", HttpStatus.BAD_REQUEST);
+			log.info("url request in create method :  {}", request);
+			String shortURL = urlService.createV2(request, request.getMetadata());
+			log.info("Create request received for url: {} processed successfully", request);
+			return new ResponseEntity<String>(shortURL, HttpStatus.CREATED);
+		}
+		return new ResponseEntity<String>("invalid URL or meta data", HttpStatus.BAD_REQUEST);
 	}
 
 	@GetMapping("s/{hash}")

@@ -15,13 +15,11 @@ import com.wee.entity.UrlClick;
 import com.wee.util.Constants;
 import in.zet.commons.utils.RedisUtils;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.wee.entity.Url;
@@ -35,10 +33,10 @@ import org.springframework.util.StringUtils;
  * @author chaitu
  *
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class UrlServiceImpl implements UrlService{
-	private static final Logger logger = LoggerFactory.getLogger(UrlClickServiceImpl.class);
 	@Autowired
 	UrlRepo urlRepo;
 
@@ -84,6 +82,15 @@ public class UrlServiceImpl implements UrlService{
 		return weeBaseUrl+ "c/" + hash;
 	}
 
+	@Override
+	public String createV2(Url url, String metadata) {
+		String hash = generateTinyUrlV2(url,metadata);
+		if (url.getGenClickId() != null && url.getGenClickId() == true) {
+			return weeBaseUrl+ "s/" + hash;
+		}
+		return weeBaseUrl+ "s/" + hash;
+	}
+
 	String convertIntoJsonString(String metaData){
 
 		if(Objects.nonNull(metaData) && !metaData.isEmpty()) {
@@ -114,10 +121,29 @@ public class UrlServiceImpl implements UrlService{
 		url.setMetadata(jsonMetaData);
 		try {
 			urlRepo.save(url);
-			logger.info("Saved tiny url for url: "+url+" successfully");
+			log.info("Saved tiny url for url: {} successfully", url);
 		}catch (DataIntegrityViolationException e) {
-			logger.error("Failed to save tiny url for url: "+url);
+			log.error("Failed to save tiny url for url: {}, error : {}", url, e.getMessage(), e);
 			return generateTinyUrl(url,metaData);
+		}
+		return hash;
+	}
+
+	String generateTinyUrlV2(Url url , String metaData) {
+		String hash = Commons.genShortCode();
+		Timestamp createdAt = new Timestamp(System.currentTimeMillis());
+
+		String jsonMetaData = convertIntoJsonString(metaData);
+		url.setHash(hash);
+		url.setCreatedTs(createdAt);
+		url.setMetadata(jsonMetaData);
+
+		try {
+			urlRepo.save(url);
+			log.info("Saved tiny url for url: {} successfully", url);
+		}catch (DataIntegrityViolationException e) {
+			log.error("Failed to save tiny url for url: {}, error : {}", url, e.getMessage(), e);
+			return generateTinyUrlV2(url,metaData);
 		}
 		return hash;
 	}
@@ -136,7 +162,7 @@ public class UrlServiceImpl implements UrlService{
 		try{
 			url = mapper.readValue(redisValue, Url.class);
 		} catch (Exception e){
-			logger.error("Failed to get data from redis  : {}", e);
+			log.error("Failed to get data from redis  : {}", e.getMessage(), e);
 		}
 		return url;
 	}
@@ -173,10 +199,10 @@ public class UrlServiceImpl implements UrlService{
 							UrlClick urlClick = mapper.readValue(redisValue, UrlClick.class);
 							urlClickList.add(urlClick);
 						} catch (Exception e) {
-							logger.error("Failed to read data from redis", e);
+							log.error("Failed to read data from redis", e);
 						}
 					}
-					logger.info("Url click list for update count: {}", urlClickList.size());
+					log.info("Url click list for update count: {}", urlClickList.size());
 					urlMapper.saveInUrlClickBulk(urlClickList);
 					batch.forEach(RedisUtils::del);
 				});
