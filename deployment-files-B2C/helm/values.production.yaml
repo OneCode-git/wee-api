@@ -12,7 +12,7 @@ minReplicas: 2
 subnet: subnet-0db069451d8d66f4b,subnet-097669ca9f5087d65
 LBname: production-magnet-ingress
 
-dnsname: link.zetapp.in
+dnsname: link.magnetapp.in
 healthPath: /actuator/health/readiness
 
 image:

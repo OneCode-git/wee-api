@@ -1,32 +1,29 @@
 global:
   env: preprod
   ingressclass: production
-appName: comms-service
+appName: wee-api
 namespace: preprod
-
 serviceport: 80
-targetport: 8080
+targetport: 5007
 
 maxReplicas: 5
-minReplicas: 1
+minReplicas: 2
 
-subnet: subnet-06a741cebaf0f7819,subnet-06e90286ced3c92b3,subnet-026043a113ecb3b3a
-LBname: preprod-eks-lbingress
+subnet: subnet-0db069451d8d66f4b,subnet-097669ca9f5087d65
+LBname: production-magnet-ingress
 
-hosts: "*.preprod.zetapp.in"
-dnsname: comms-service.preprod.zetapp.in
-
-healthPath: /comms-service/actuator/health/readiness
-
+dnsname: link.zetapp.in
+healthPath: /actuator/health/readiness
 
 image:
-  repository: 887417737466.dkr.ecr.ap-south-1.amazonaws.com/comms-service-preprod
+  repository: 542649758539.dkr.ecr.ap-south-1.amazonaws.com/wee-api-preprod
   tag: latest
 
 resources:
   requests:
-    cpu: "200m"
-    memory: "600Mi"
+    cpu: "300m"
+    memory: "500Mi"
   limits:
     cpu: 1
-    memory: "2Gi"
+    memory: "1Gi"
+
