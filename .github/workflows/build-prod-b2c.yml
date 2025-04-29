@@ -1,4 +1,4 @@
-name: Production Branch
+name: Production B2C Branch
 on:
   pull_request_target:
     types:
