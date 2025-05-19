@@ -10,7 +10,10 @@ import com.wee.entity.Url;
 import com.wee.service.UrlClickService;
 import com.wee.service.UrlService;
 import com.wee.util.Commons;
+import com.wee.util.HeaderUtils;
+import com.wee.util.UrlValidator;
 import eu.bitwalker.useragentutils.UserAgent;
+import org.apache.commons.text.StringEscapeUtils;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,15 +21,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URI;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.regex.Pattern;
 
 /**
  * @author chaitu
@@ -62,6 +71,25 @@ public class UrlController {
 		return taskExecutor;
 	}
 
+	private static final Pattern CRLF_PATTERN = Pattern.compile("[\\r\\n]");
+
+	private void setLocationHeaderSafely(HttpServletResponse response, String value, String hash) {
+		try {
+			if (value == null || CRLF_PATTERN.matcher(value).find()) {
+				LOGGER.error("CRLF injection attempt in header value for hash: {}", hash);
+				throw new SecurityException("Invalid header value detected");
+			}
+			
+			// Encode value before setting header
+			String encodedValue = URLEncoder.encode(value, StandardCharsets.UTF_8.name());
+			response.setHeader("Location", encodedValue);
+			LOGGER.debug("Header set successfully for hash: {}", hash);
+		} catch (UnsupportedEncodingException e) {
+			LOGGER.error("Error encoding URL for hash: {}", hash, e);
+			throw new SecurityException("Error setting header value", e);
+		}
+	}
+
 	@GetMapping("{hash}")
 	void redirect(@PathVariable("hash") String hash,HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
 		LOGGER.info("Redirected request for hash:  "+hash+ " with user-Agent: "+userAgentString+" with httprequest: "+request +" with http-response: "+httpServletResponse );
@@ -91,19 +119,41 @@ public class UrlController {
 			LOGGER.info("time taken to complete save url click process : " + (endDate.getTime() - startDate.getTime()));
 		}
 
-		oUrl.ifPresent(url->{
-					httpServletResponse.setHeader("Location", url.getOriginalUrl());
-		    httpServletResponse.setStatus(302);
-		    LOGGER.info("Redirected request for hash:  "+hash+ " with user-Agent: "+userAgent+" with httprequest: "+request +" with http-response: "+httpServletResponse );
+		oUrl.ifPresent(url -> {
+			try {
+				String originalUrl = url.getOriginalUrl();
+				// Validate and sanitize URL
+				if (originalUrl == null || originalUrl.contains("\r") || originalUrl.contains("\n")) {
+					LOGGER.error("CRLF injection attempt detected for hash: {}", hash);
+					throw new IllegalArgumentException("Invalid URL characters detected");
+				}
+		
+				String sanitizedUrl = UrlValidator.sanitizeUrl(originalUrl);
+				String encodedUrl = UriUtils.encodePath(sanitizedUrl, StandardCharsets.UTF_8);
+		
+				// Final header value validation
+				if (encodedUrl.contains("\r") || encodedUrl.contains("\n")) {
+					LOGGER.error("CRLF detected in encoded URL for hash: {}", hash);
+					throw new IllegalArgumentException("Invalid header value");
+				}
+		
+				setLocationHeaderSafely(httpServletResponse, encodedUrl, hash);
+				httpServletResponse.setStatus(302);
+				LOGGER.info("Redirected request for hash: {}", hash);
+			} catch (IllegalArgumentException e) {
+				LOGGER.error("Security violation - Invalid header value for hash: {}", hash, e);
+				throw new SecurityException("Invalid redirect URL", e);
+			}
 		});
 	}
 
 	@GetMapping("c/{hash}")
-	void redirectToLoadingScreen(@PathVariable("hash") String hash, HttpServletRequest request, HttpServletResponse response, @RequestHeader("User-Agent") String userAgentString) {
-		LOGGER.info("Redirection request to loading screen for hash: {}", hash);
-		String redirectionUrl = "https://develop.d1mkcl7qyojtwo.amplifyapp.com/redirection/" + hash;
-		response.setHeader("Location", redirectionUrl);
-		response.setStatus(302);
+	public ResponseEntity<Void> redirect(@PathVariable("hash") String hash) {
+		if (hash.contains("\r") || hash.contains("\n")) {
+			return ResponseEntity.badRequest().build();
+		}
+		URI uri = URI.create("https://develop.d1mkcl7qyojtwo.amplifyapp.com/redirection/" + URLEncoder.encode(hash, StandardCharsets.UTF_8));
+		return ResponseEntity.status(HttpStatus.FOUND).location(uri).build();
 	}
 	
 	
@@ -137,14 +187,32 @@ public class UrlController {
 			LOGGER.info("time taken to complete save url click process : " + (endDate.getTime() - startDate.getTime()));
 		}
 //		urlClickService.saveInUrlClick(userAgentString, hash, ipAddress, userAgentDerivatives );
-		oUrl.ifPresent(url->{
-			String templateURL = url.getOriginalUrl();
-			String finalURL = templateURL.replace("%7Bclick_id%7D", UUID.randomUUID().toString());
-			finalURL = finalURL.replace("%7Bepoch%7D", new Date().getTime()+ "");
-		    httpServletResponse.setHeader("Location", finalURL);
-		    httpServletResponse.setStatus(302);
-		    LOGGER.info("Redirected request to store clickID for hash:  "+hash+ " with user-Agent: "+userAgent + "with request:" + request + "with http-response" + httpServletResponse);
-		});
+        oUrl.ifPresent(url -> {
+            try {
+                // Extract and validate URL
+                String templateURL = url.getOriginalUrl();
+                if (templateURL == null || templateURL.contains("\r") || templateURL.contains("\n")) {
+                    LOGGER.error("CRLF injection attempt detected for hash: {}", hash);
+                    throw new IllegalArgumentException("Invalid URL characters detected");
+                }
+
+                // Process URL
+                String finalURL = templateURL.replace("%7Bclick_id%7D", UUID.randomUUID().toString())
+                                           .replace("%7Bepoch%7D", String.valueOf(new Date().getTime()));
+                
+                // Sanitize and encode
+                String sanitizedUrl = UrlValidator.sanitizeUrl(finalURL);
+                String encodedUrl = UriUtils.encodePath(sanitizedUrl, StandardCharsets.UTF_8);
+                
+                // Set headers safely
+                setLocationHeaderSafely(httpServletResponse, encodedUrl, hash);
+                httpServletResponse.setStatus(302);
+                LOGGER.info("Redirected request for hash: {} with validated URL", hash);
+            } catch (IllegalArgumentException e) {
+                LOGGER.error("Security violation - URL validation failed for hash: {}", hash, e);
+                throw new SecurityException("Invalid URL detected", e);
+            }
+        });
 
 	}
 	
@@ -226,8 +294,8 @@ public class UrlController {
 			// Generate HTML for app detection and redirection
 			String htmlContent = "<html>" +
 					"<head>" +
-					"<meta http-equiv=\"refresh\" content=\"0; url=" + url.getOriginalUrl() + "\" />" +
-					"<script>window.location.href='" + url.getOriginalUrl() + "';</script>" +
+					"<meta http-equiv=\"refresh\" content=\"0; url=" + StringEscapeUtils.escapeHtml4(url.getOriginalUrl()) + "\" />" +
+					"<script>window.location.href='" + StringEscapeUtils.escapeHtml4(url.getOriginalUrl()) + "';</script>" +
 					"</head>" +
 					"<body>" +
 					"Redirecting..." +
@@ -237,7 +305,7 @@ public class UrlController {
 			// Set content type and write HTML
 			return ResponseEntity.ok()
 					.header("Content-Type", "text/html")
-					.body(htmlContent);
+					.body(StringEscapeUtils.escapeHtml4(htmlContent));
 		} else {
 			return ResponseEntity.internalServerError().body("Something went wrong");
 		}
