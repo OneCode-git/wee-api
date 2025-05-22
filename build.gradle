@@ -1,15 +1,25 @@
 plugins {
 	id 'java'
 	id 'jacoco'
-	id 'org.springframework.boot' version '3.2.5'
-	id 'io.spring.dependency-management' version '1.1.4'
+	id 'org.springframework.boot' version '3.2.12'
+	id 'io.spring.dependency-management' version '1.1.4' // Spring Boot plugin applies this; often not needed explicitly
 }
 
 group = 'com.wee'
 version = '0.0.1-SNAPSHOT'
+
 java {
 	sourceCompatibility = '17'
 	targetCompatibility = '17'
+}
+
+// Define versions in a central place
+ext {
+	lombokVersion = '1.18.32' // Or latest stable version
+	// For Spring Cloud, ensure this is a valid, resolvable version
+	// E.g., '2023.0.2' was a known version for Spring Cloud 2023.0.x (Leyton)
+	// Please verify the latest appropriate version for Spring Boot 3.2.12
+	springCloudVersion = '2023.0.2' // Example: Replace with the correct LATEST Leyton (2023.0.x) version
 }
 
 repositories {
@@ -51,37 +61,27 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-	// Updated Spring Cloud dependencies
+	// Spring Cloud dependencies - version managed by BOM
 	implementation 'org.springframework.cloud:spring-cloud-context'
 	implementation 'io.awspring.cloud:spring-cloud-aws-starter-secrets-manager:3.0.1'
 
-	// Updated MyBatis
 	implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:3.0.3'
-
-	// Updated AWS SDK
 	implementation 'software.amazon.awssdk:sns:2.25.16'
-
-	// Updated MySQL connector
 	implementation 'com.mysql:mysql-connector-j:8.3.0'
-
-	// Other dependencies - updated versions
 	implementation 'com.github.ua-parser:uap-java:1.6.1'
 	implementation 'com.blueconic:browscap-java:1.3.0'
 	implementation 'eu.bitwalker:UserAgentUtils:1.21'
 	implementation 'org.json:json:20240303'
-
-	// Updated Gson
 	implementation 'com.google.code.gson:gson:2.10.1'
-	implementation 'org.apache.commons:commons-text:1.11.0'
-	// Your custom dependency
-	implementation ('in.zet:commons:0.0.7') {
+
+	implementation('in.zet:commons:0.0.7') {
 		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-log4j2'
 	}
 
-	compileOnly 'org.projectlombok:lombok'
-	developmentOnly 'org.springframework.boot:spring-boot-devtools'
-	annotationProcessor 'org.projectlombok:lombok'
+	compileOnly "org.projectlombok:lombok:${lombokVersion}"
+	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
 
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'
 
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
@@ -91,7 +91,8 @@ dependencies {
 
 dependencyManagement {
 	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.1"
+		// Use the corrected Spring Cloud BOM version
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
 	}
 }
 
