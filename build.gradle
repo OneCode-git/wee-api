@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
 	id 'jacoco'
-	id 'org.springframework.boot' version '3.2.12'
+	id 'org.springframework.boot' version '3.3.7'
 	id 'io.spring.dependency-management' version '1.1.4' // Spring Boot plugin applies this; often not needed explicitly
 }
 group = 'com.wee'
@@ -66,10 +66,13 @@ dependencies {
 		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-log4j2'
 	}
 
-	// Vulnerability mitigation - force newer versions compatible with Spring Boot 3.2.x
+	// Security vulnerability fixes
 	implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.34'
-	implementation 'org.springframework.security:spring-security-crypto:6.2.7'
+	implementation 'org.springframework.security:spring-security-crypto:6.3.5'
+	implementation 'io.netty:netty-common:4.1.118.Final'
 	implementation 'io.netty:netty-handler:4.1.118.Final'
+	implementation 'ch.qos.logback:logback-classic:1.5.16'
+	implementation 'ch.qos.logback:logback-core:1.5.16'
 
 	compileOnly "org.projectlombok:lombok:${lombokVersion}"
 	annotationProcessor "org.projectlombok:lombok:${lombokVersion}"
