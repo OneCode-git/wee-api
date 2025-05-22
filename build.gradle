@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
 	id 'jacoco'
-	id 'org.springframework.boot' version '3.4.3'
+	id 'org.springframework.boot' version '3.4.5'
 	id 'io.spring.dependency-management' version '1.1.4' // Spring Boot plugin applies this; often not needed explicitly
 }
 group = 'com.wee'
@@ -67,8 +67,8 @@ dependencies {
 	}
 
 	// Security vulnerability fixes - Latest versions for 2025 CVEs
-	implementation 'org.apache.tomcat.embed:tomcat-embed-core:10.1.35'
-	implementation 'org.springframework.security:spring-security-crypto:6.4.2'
+	implementation 'org.apache.tomcat.embed:tomcat-embed-core:11.0.6'
+	implementation 'org.springframework.security:spring-security-crypto:6.4.4'
 	implementation 'io.netty:netty-common:4.1.119.Final'
 	implementation 'io.netty:netty-handler:4.1.119.Final'
 	implementation 'ch.qos.logback:logback-classic:1.5.16'
