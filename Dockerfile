@@ -9,7 +9,7 @@ RUN apk update && \
     unzip -q newrelic-java.zip
     
 
-FROM --platform=$BUILDPLATFORM  arm64v8/amazoncorretto:11.0.20-alpine
+FROM --platform=$BUILDPLATFORM arm64v8/amazoncorretto:17-alpine
 RUN apk add --no-cache tzdata
 ENV TZ="Asia/Kolkata"
 
