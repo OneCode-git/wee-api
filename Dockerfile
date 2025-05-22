@@ -7,9 +7,9 @@ RUN apk update && \
     apk add curl && \
     curl --location https://download.newrelic.com/newrelic/java-agent/newrelic-agent/current/newrelic-java.zip  > newrelic-java.zip && \
     unzip -q newrelic-java.zip
-    
 
-FROM --platform=$BUILDPLATFORM eclipse-temurin:17-jdk
+
+FROM --platform=$BUILDPLATFORM eclipse-temurin:17-jdk-alpine
 RUN apk add --no-cache tzdata
 ENV TZ="Asia/Kolkata"
 
