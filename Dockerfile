@@ -9,7 +9,7 @@ RUN apk update && \
     unzip -q newrelic-java.zip
     
 
-FROM --platform=$BUILDPLATFORM eclipse-temurin:21-jdk
+FROM --platform=$BUILDPLATFORM eclipse-temurin:17-jdk
 RUN apk add --no-cache tzdata
 ENV TZ="Asia/Kolkata"
 

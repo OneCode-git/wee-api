@@ -57,7 +57,7 @@ jobs:
       - name: Set up Java env
         uses: actions/setup-java@v3
         with:
-          java-version: 21
+          java-version: 17
           distribution: 'adopt'
           cache: gradle
 
