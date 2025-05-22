@@ -2,7 +2,7 @@ package com.wee.util;
 
 import java.util.regex.Pattern;
 
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletResponse;
 
 public class HeaderUtils {
     private static final Pattern INVALID_HEADER_CHARS = Pattern.compile("[\r\n]");

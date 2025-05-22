@@ -7,18 +7,19 @@ import java.sql.Timestamp;
 import java.util.Objects;
 import java.util.UUID;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Table;
 
 import com.blueconic.browscap.Capabilities;
 
 import eu.bitwalker.useragentutils.UserAgent;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 /**
  * @author chaitu
@@ -32,7 +33,7 @@ import lombok.NoArgsConstructor;
 public class UrlClick {
 	@Id
 	@Column(name="id")
-	@org.hibernate.annotations.Type(type="uuid-char")
+	@JdbcTypeCode(SqlTypes.VARCHAR)
 	UUID id;
 	
 	@Column(name="url_id")

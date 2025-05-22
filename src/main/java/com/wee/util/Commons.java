@@ -1,7 +1,6 @@
 /**
  * 
  */
-
 package com.wee.util;
 
 import java.io.IOException;
@@ -28,7 +27,7 @@ public class Commons {
 	        try { 
 	  
 	            // Static getInstance method is called with hashing MD5 
-	            MessageDigest md = MessageDigest.getInstance("SHA-256"); 
+	            MessageDigest md = MessageDigest.getInstance("MD5"); 
 	  
 	            // digest() method is called to calculate message digest 
 	            //  of an input digest() return array of byte 

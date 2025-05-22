@@ -5,9 +5,6 @@ package com.wee.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.MappedSuperclass;
 
 import org.hibernate.Hibernate;
 
@@ -16,6 +13,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 //import com.voodoodyne.jackson.jsog.JSOGGenerator;
 
 import lombok.Data;
+
+import jakarta.persistence.MappedSuperclass;
 
 /**
  * @author chaitu

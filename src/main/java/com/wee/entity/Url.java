@@ -4,13 +4,14 @@
 package com.wee.entity;
 
 import com.wee.dto.UrlBulkDto;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.sql.Timestamp;
+
 
 /**
  * @author chaitu
@@ -21,7 +22,7 @@ import java.sql.Timestamp;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Url extends BaseEntity implements Serializable{
+public class Url extends BaseEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
