@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
 	id 'jacoco'
-	id 'org.springframework.boot' version '3.4.1'
+	id 'org.springframework.boot' version '3.2.5'
 	id 'io.spring.dependency-management' version '1.1.4'
 }
 
@@ -72,7 +72,7 @@ dependencies {
 
 	// Updated Gson
 	implementation 'com.google.code.gson:gson:2.10.1'
-
+	implementation 'org.apache.commons:commons-text:1.11.0'
 	// Your custom dependency
 	implementation ('in.zet:commons:0.0.7') {
 		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-log4j2'
@@ -91,7 +91,7 @@ dependencies {
 
 dependencyManagement {
 	imports {
-		mavenBom "org.springframework.cloud:spring-cloud-dependencies:2024.0.0"
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:2023.0.1"
 	}
 }
 
