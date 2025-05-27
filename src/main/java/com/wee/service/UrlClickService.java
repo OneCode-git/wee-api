@@ -5,7 +5,7 @@ package com.wee.service;
 
 import com.wee.entity.UrlClick;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import eu.bitwalker.useragentutils.UserAgent;
 
