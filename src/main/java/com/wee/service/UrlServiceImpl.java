@@ -70,6 +70,11 @@ public class UrlServiceImpl implements UrlService{
 		return url;
 	}
 
+	@Override
+	public Optional<Url> findByHashV2(String hash) {
+		return urlRepo.findById(hash);
+	}
+
 	/* (non-Javadoc)
 	 * @see com.wee.service.UrlService#create(com.wee.entity.Url)
 	 */

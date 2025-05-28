@@ -8,6 +8,7 @@ targetport: 5007
 
 maxReplicas: 5
 minReplicas: 2
+maxUnavailable: 1
 
 subnet: subnet-0db069451d8d66f4b,subnet-097669ca9f5087d65
 LBname: production-magnet-ingress
