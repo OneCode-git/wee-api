@@ -16,6 +16,7 @@ import org.json.JSONObject;
  */
 public interface UrlService {
 	Optional<Url> findByHash(String hash);
+	Optional<Url> findByHashV2(String hash);
 	String create(Url url, String metadata);
 
 	String createV2(Url url, String metadata);
