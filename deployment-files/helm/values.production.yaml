@@ -10,6 +10,8 @@ targetport: 5007
 maxReplicas: 5
 minReplicas: 2
 
+maxUnavailable: 1
+
 dnsname: wee.bnking.in
 subnet: subnet-06a741cebaf0f7819,subnet-06e90286ced3c92b3,subnet-026043a113ecb3b3a
 LBname: production-eks-lbingress
