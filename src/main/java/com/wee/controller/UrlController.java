@@ -239,7 +239,7 @@ public class UrlController {
 	@GetMapping("s/{hash}")
 	public ResponseEntity<String> redirectView(@PathVariable("hash") String hash, HttpServletResponse response) throws IOException {
 
-		Optional<Url> urlOpt = urlService.findByHash(hash);
+		Optional<Url> urlOpt = urlService.findByHashV2(hash);
 
 		if (urlOpt.isPresent()) {
 			Url url = urlOpt.get();
