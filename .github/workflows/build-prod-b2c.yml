@@ -1,10 +1,5 @@
 name: Production B2C Branch
 on:
-  pull_request_target:
-    types:
-      - closed
-    branches:
-      - 'master'
   workflow_dispatch:
     inputs:
       choice:
@@ -33,7 +28,7 @@ env:
 jobs:
 
   Build-Deploy-Service:
-    if: ( github.event_name == 'workflow_dispatch' && github.event.inputs.choice  == 'deploy' ) || ( github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.merged == true )
+    if: ( github.event_name == 'workflow_dispatch' && contains(fromJson('["bhaskaras1999", "sankalp-zet", "jaya-lakshmi-majji", "chaitu1cod"]' ), github.actor ) ) && ( github.event_name == 'workflow_dispatch' && github.event.inputs.choice  == 'deploy' ) || ( github.event_name == 'pull_request_target' && github.event.action == 'closed' && github.event.pull_request.merged == true )
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
