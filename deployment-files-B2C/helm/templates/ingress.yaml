@@ -26,9 +26,9 @@ metadata:
 
 spec:
   ingressClassName: "{{ .Values.global.ingressclass  }}-ingress-class"
-#  tls:
-#    - hosts:
-#        - "{{ .Values.hosts }}"
+  tls:
+    - hosts:
+        - "{{ .Values.hosts }}"
   rules:
     - host: {{ .Values.dnsname }}
       http:

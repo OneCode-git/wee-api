@@ -16,6 +16,8 @@ LBname: production-magnet-ingress
 dnsname: go.zetapp.in
 healthPath: /actuator/health/readiness
 
+hosts:
+
 image:
   repository: 542649758539.dkr.ecr.ap-south-1.amazonaws.com/wee-api-prod
   tag: latest
