@@ -1,6 +1,6 @@
 global:
   env: preprod
-  ingressclass: production
+  ingressclass: preprod
 appName: wee-api
 namespace: preprod
 serviceport: 80
@@ -10,10 +10,10 @@ maxReplicas: 5
 minReplicas: 2
 
 subnet: subnet-0db069451d8d66f4b,subnet-097669ca9f5087d65
-LBname: production-magnet-ingress
+LBname: preprod-magnet-ingress
 
-dnsname: link.zetapp.in
-healthPath: /actuator/health/readiness
+hosts: "*.api.zetapp.in"
+healthPath: /wee/actuator/health/readiness
 
 image:
   repository: 542649758539.dkr.ecr.ap-south-1.amazonaws.com/wee-api-preprod
