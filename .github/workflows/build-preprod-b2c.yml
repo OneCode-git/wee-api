@@ -1,13 +1,5 @@
 name: Preprod B2C Branch
 on:
-<<<<<<< Updated upstream
-  pull_request_target:
-    types:
-      - closed
-    branches:
-      - 'staging'
-=======
->>>>>>> Stashed changes
   workflow_dispatch:
     inputs:
       choice:
@@ -25,11 +17,7 @@ env:
   ClusterName: Staging-Magnet
   Env: preprod
   NameSpace: preprod
-<<<<<<< Updated upstream
-  ValuesFile: values.staging.yaml
-=======
   ValuesFile: values.preprod.yaml
->>>>>>> Stashed changes
   SONAR_HOST_URL: https://sonar-eks.staging.onecode.in
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_STAGING }}
   SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_STAGING }}
@@ -290,13 +278,3 @@ jobs:
           
           
           rm ~/.kube/config
-
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
-        if: always()
-        env:
-          SLACK_CHANNEL: ${{ env.SLACK_CHANNEL }}
-          SLACK_COLOR: ${{ job.status }} # or a specific color like 'good' or '#ff00ff'
-          SLACK_MESSAGE: "${{ env.AppName }} is ${{ job.status }}"
-          SLACK_TITLE: 'Restart Status'
-          SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
