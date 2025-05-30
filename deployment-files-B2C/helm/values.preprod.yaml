@@ -3,17 +3,26 @@ global:
   ingressclass: preprod
 appName: wee-api
 namespace: preprod
+
 serviceport: 80
 targetport: 5007
 
-maxReplicas: 5
-minReplicas: 2
+maxReplicas: 1
+minReplicas: 1
 
+<<<<<<< Updated upstream
 subnet: subnet-0db069451d8d66f4b,subnet-097669ca9f5087d65
 LBname: preprod-magnet-ingress
 
 hosts: "*.api.zetapp.in"
 healthPath: /wee/actuator/health/readiness
+=======
+subnet: subnet-0ac88ae5988e8e023,subnet-08b07ee584a48cc64,subnet-01ab2cb12cacf1209
+LBname: preprod-magnet-alb
+
+hosts: "*.preprod.zetapp.in"
+healthPath: /actuator/health/readiness
+>>>>>>> Stashed changes
 
 image:
   repository: 542649758539.dkr.ecr.ap-south-1.amazonaws.com/wee-api-preprod
@@ -21,9 +30,8 @@ image:
 
 resources:
   requests:
-    cpu: "300m"
+    cpu: "200m"
     memory: "500Mi"
   limits:
     cpu: 1
     memory: "1Gi"
-
