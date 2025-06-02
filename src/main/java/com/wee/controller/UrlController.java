@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -30,6 +31,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.wee.util.Constants.REDIRECTION_PATH;
+import static com.wee.util.Constants.ZET_PROFILES;
 
 /**
  * @author chaitu
@@ -45,6 +47,9 @@ public class UrlController {
 	EventsLogHelper eventsLogHelper;
 	@Autowired
 	private UrlClickService urlClickService;
+
+	@Autowired
+	private Environment environment;
 
 	@Value("${wee.base.url}")
 	String weeBaseUrl;
@@ -73,6 +78,14 @@ public class UrlController {
 	void redirect(@PathVariable("hash") String hash,HttpServletRequest request, HttpServletResponse httpServletResponse,@RequestHeader("User-Agent") String userAgentString) {
 		LOGGER.info("Redirect request recieved for hash:  "+hash+ " with user-Agent: "+userAgentString);
 		Optional<Url> oUrl = urlService.findByHash(hash);
+
+		if(Arrays.stream(environment.getActiveProfiles()).anyMatch(x -> x.contains(ZET_PROFILES))) {
+			oUrl.ifPresent(url->{
+				httpServletResponse.setHeader("Location", url.getOriginalUrl());
+				httpServletResponse.setStatus(302);
+			});
+			return;
+		}
 		String ipAddress = urlClickService.getIpAddress(request);
 		UserAgent userAgent = UserAgent.parseUserAgentString(userAgentString);
 		List<String> userAgentDerivatives = urlClickService.getValuesFromUserAgent(userAgent);
@@ -239,7 +252,7 @@ public class UrlController {
 	@GetMapping("s/{hash}")
 	public ResponseEntity<String> redirectView(@PathVariable("hash") String hash, HttpServletResponse response) throws IOException {
 
-		Optional<Url> urlOpt = urlService.findByHash(hash);
+		Optional<Url> urlOpt = urlService.findByHashV2(hash);
 
 		if (urlOpt.isPresent()) {
 			Url url = urlOpt.get();
