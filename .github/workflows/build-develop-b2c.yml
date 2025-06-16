@@ -105,7 +105,7 @@ jobs:
         with:
           context: ./
           #           # Dockerfile file location
-          file: ./Dockerfile
+          file: ./Dockerfile-b2c
           #           # Supported image architectures, since I need an aarch64 image, so I added arm64 here
 
           push: true
