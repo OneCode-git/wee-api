@@ -17,7 +17,7 @@ dnsname: go-dev.magnetapp.in
 healthPath: /actuator/health/readiness
 
 image:
-  repository: 542649758539.dkr.ecr.ap-south-1.amazonaws.com/wee-api-staging
+  repository: 542649758539.dkr.ecr.ap-south-1.amazonaws.com/wee-api-develop
   tag: latest
 
 resources:
