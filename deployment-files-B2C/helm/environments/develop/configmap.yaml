@@ -1,5 +1,5 @@
-ACTIVE_PROFILE: develop
-SECRETMANAGER_CONFIG: "aws-secretsmanager:/develop/comms-service"
+ACTIVE_PROFILE: develop-b2c
+SECRETMANAGER_CONFIG: "aws-secretsmanager:/develop/wee-api"
 AWS_REGION: ap-south-1
 PORT: "8080"
-_JAVA_OPTIONS: -javaagent:/var/newrelic.jar -Dnewrelic.config.app_name=comms-service-develop-eks -Dnewrelic.config.license_key=7e496d7961ed578c800942b3fd949672fd3dNRAL -Xms512m
+_JAVA_OPTIONS: -javaagent:/var/newrelic.jar -Dnewrelic.config.app_name=wee-api-develop-eks -Dnewrelic.config.license_key=7e496d7961ed578c800942b3fd949672fd3dNRAL -Xms512m
