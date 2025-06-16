@@ -2,7 +2,7 @@ global:
   env: develop
   ingressclass: staging
 appName: wee-api
-namespace: staging
+namespace: develop
 
 serviceport: 80
 targetport: 5007
