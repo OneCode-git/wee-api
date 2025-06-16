@@ -20,15 +20,15 @@ env:
   AWS_Account: 542649758539
   Region: ap-south-1
   ClusterName: Staging-Magnet
-  Env: staging
-  NameSpace: staging
-  ValuesFile: values.staging.yaml
+  Env: develop
+  NameSpace: develop
+  ValuesFile: values.develop.yaml
   SONAR_HOST_URL: https://sonar-eks.staging.onecode.in
   SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_STAGING }}
   SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL_STAGING }}
   SLACK_CHANNEL: '#gitactions-staging'
   ECR_REGISTRY: 542649758539.dkr.ecr.ap-south-1.amazonaws.com
-  ECR_REPOSITORY: wee-api-staging
+  ECR_REPOSITORY: wee-api-develop
   AppName: wee-api
 
 
