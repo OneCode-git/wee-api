@@ -10,6 +10,7 @@ on:
         options:
           - deploy
           - restart
+          - rollback
 
 env:
   AWS_Account: 542649758539
@@ -291,3 +292,63 @@ jobs:
           SLACK_MESSAGE: "${{ env.AppName }} is ${{ job.status }}"
           SLACK_TITLE: 'Restart Status'
           SLACK_WEBHOOK: ${{ env.SLACK_WEBHOOK }}
+
+  Rollback-Previous-Image:
+    if: github.event_name == 'workflow_dispatch' && github.event.inputs.choice == 'rollback'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::542649758539:role/github-actions-role
+          role-session-name: githubactions
+          aws-region: ${{ env.Region }}
+
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Create kube config
+        run: |
+          aws eks update-kubeconfig --region "${{ env.Region }}" --name "${{ env.ClusterName }}"
+
+      - name: Get previous Helm revision
+        id: get-revision
+        run: |
+          REVISION=$(helm history "${{ env.AppName }}" -n "${{ env.NameSpace }}" --max 2 | awk 'NR==2 {print $1}')
+          echo "Rolling back to revision: $REVISION"
+          echo "PREVIOUS_REVISION=$REVISION" >> $GITHUB_ENV
+
+      - name: Helm Rollback to Previous Revision
+        run: |
+          helm rollback "${{ env.AppName }}" "$PREVIOUS_REVISION" -n "${{ env.NameSpace }}" --debug
+
+      - name: Check Pod Deployment Status
+        id: pod-status
+        timeout-minutes: 5
+        run: |
+          TIMEOUT=100
+          echo "Default Timeout 5 mins"
+          POD_NAME=$(kubectl get pods -n "${{ env.NameSpace }}" --sort-by='.metadata.creationTimestamp' --selector=appname="${{ env.AppName }}" | awk 'END{print $1}')
+
+          for i in $(seq 1 $TIMEOUT); do
+             pod_status=$(kubectl get pod $POD_NAME -n "${{ env.NameSpace }}" -o jsonpath='{.status.phase}')
+             ready_status=$(kubectl get pod -n "${{ env.NameSpace }}" $POD_NAME -o jsonpath='{.status.conditions[?(@.type=="Ready")].status}')
+
+             if [[ "$pod_status" == "Running"  &&  "$ready_status" == "True" ]]; then
+               echo "::set-output name=pod_status::Running"
+               echo "::set-output name=ready_status::True"
+               echo -e "\e[1mPod is Running.\e[0m"
+               kubectl get pods -n "${{ env.NameSpace }}" | grep -i "${{ env.AppName }}"
+               break
+             fi
+
+             echo -e "\e[1mWaiting for Pod to become Ready...\e[0m"
+             sleep 1
+          done
+
+          rm ~/.kube/config
